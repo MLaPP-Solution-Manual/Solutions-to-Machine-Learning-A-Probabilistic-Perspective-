@@ -1,0 +1,1666 @@
+\documentclass[UTF8]{ctexart}
+\usepackage{fancyhdr}                                
+\usepackage{lastpage}                                           
+\usepackage{layout}  
+\usepackage{amsmath}    
+\usepackage{ragged2e} 
+\usepackage{fancyhdr}                                
+\usepackage{lastpage}                                           
+\usepackage{layout}  
+\usepackage{amsmath}   
+\usepackage{graphicx}        
+\usepackage{subfigure}
+\usepackage{listings}
+\usepackage{bm}
+\lstset{language=Matlab}
+\lstset{breaklines}
+\lstset{extendedchars=false}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{paralist}
+\usepackage{mathrsfs}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{algorithm}  
+%\usepackage{algorithmic}
+\usepackage{algorithm}
+\usepackage{algpseudocode}  
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{diagbox}                                 
+%\pagestyle{empty}                   %不设置页眉页脚        
+\begin{document}
+\title{Machine Learning: A Probabilistic Perspective 习题解答(1)}
+\author{李方圻}
+\maketitle
+\tableofcontents
+\newpage
+\section{导言}
+\subsection{文档构成}
+本来这一章节应该作为正文的第一部分进行第一章的习题解答，但是介于MLAPP一书第一章并无习题，故将此处篇幅作为习题解答的导言。
+
+本文档提供了Machine Learning: A Probabilistic Perspective一书第一章到第十四章的大部分习题的详细解答。题目本身一般没有重述，比较有理论意义的题目之核心内容表明在了小标题中，也方便在目录中查找。后半本书的习题解答预计会在习题解答（2）文档中给出。
+
+MLAPP一书的习题一般分为两种：理论习题和实践习题，本文档给出了绝大多数理论习题的解答，除了部分过于简单的和两个尚未得解的。实践习题基于一个MATLAB的工具包。实践习题的解答目前尚未给出。
+
+\subsection{关于Machine Learning: A Probabilistic Perspective}
+即便是专业的机器学习课程也很难界定“机器学习”到底是什么。
+
+一方面，诸多人工智能领域的新晋进展震惊着社会，而高校中相关课程的选修人数也大幅增长；一方面，仍有诸多的理论工作者对于和学习相关的技术抱有怀疑态度，这其中尤其以深度学习所受到的评论最为两极分化。
+
+机器学习在最近呈现出的非凡成果常常使人忘记这是一门已经经历了漫长发展的学科，它的启蒙至少可以追溯到上个世纪四十年代关于“电子脑”的研究。但即便如此，也没有人能界定机器学习是一门完全成熟的理论，一个例子就是即便在研究者社区，也有很多人将机器学习冠以“玄学”的称呼。我个人认为被称作“玄学”是许多理论分支在未发展成熟阶段所共同经受过的经历。
+
+机器学习作为一个学科的理论体系还处在一个逐渐构成的过程中，而其中相对最为成功的就是基于概率论的理论体系构成，就如同MLAPP一书封底上普林斯顿大学的David Blei评价的一样“In Machine Learning, the language of probability and statistics reveals important connections between seemingly disparate algorithms and strategies. Thus, its readers will become articulate in a holistic view of the state-of-art and poised to build the next generation of machine learning algorithms.”
+
+MLAPP的核心思想很简单：机器学习等同于贝叶斯统计学（Bayesian Statistics），而这种统计方法能够广泛地联系起诸多看似独立的算法。不过贝叶斯统计本身的历史要远远长于机器学习本身（可以上溯到拉普拉斯的年代），而在这一核心思想上，MLAPP也并非首创，Pattern Recognition and Machine Learning就是一个更鲜明的例子。两本书都可以算作机器学习理论方面比较经典的教材。
+
+总体上而言，MLAPP以牺牲了部分推导的完整性来降低了整本书的难度，但也涵盖了更广泛的模型，更适合有所理论基础的学习者入门。其和概率论紧密联系的经典模型相关的章节（譬如2，3,4,5,7,8,11,12章）精彩程度和PRML不相上下，但是也因论述的顺序不同而值得PRML的阅读者再次细读。但是也有部分章节的写作或者习题部分比较敷衍，使得整个成书质量显得不够稳定，不过这也是因为有些章节的篇幅实在不足以涵盖一整个比较成熟的模型理论（譬如10章，和PRML的第8章相比高下立判）。所以本文档暂时并未给出第6,10,14章的习题解答。
+
+\subsection{文档性质}
+本文档的写作动机是作者（我）在选修机器学习课程时需要阅读MLAPP一教材，但是搜索习题解答无果。虽有几个Github上的项目似乎已经开始着手进行解答的写作，但是无奈其进展实在过于缓慢，而且我更想关注这本教材的理论部分而不是实践代码。
+
+是故写作本文档以做参考，本文档的写作完成是在正式学期开始前的两周间，因为时间比较仓促，难免有所纰漏，所以一方面建议读者采取批判地眼光阅读，不要我写什么就信什么；一方面希望读者提出修改意见，除了错误解答的修正意见以外，擅长使用MATLAB、擅长Latex排版或愿意参与文档改进的读者，欢迎主动与我联系。
+
+2017年10月22日
+
+慕尼黑
+
+\newpage
+\section{概率}
+\subsection{}
+分别记两个孩子为$A$和$B$。
+
+$Event_{1}=A$为男孩，$B$为女孩；$Event_{2}=B$为男孩，$A$为女孩；$Event_{3}=A$为男孩，$B$为男孩。
+
+$$P(Event_{1})=P(Event_{2})=P(Event_{3})=\frac{1}{4}$$
+
+$$P(onegirl|oneboy)=\frac{P(Event_{1})+P(Event_{2})}{P(Event_{1})+P(Event_{2})+P(Event_{3})}=\frac{2}{3}$$
+
+在b题中，不妨设看到的是孩子$A$，则：
+$$P(B=girl|A=boy)=\frac{1}{2}$$
+
+\subsection{}
+归一化后易知谬误。
+
+\subsection{随机变量和的方差}
+根据定义，从形式上得到：
+
+$$var(X+Y)=\mathbb{E}((X+Y)^{2})-\mathbb{E}^{2}(X+Y)=\mathbb{E}(X^{2})-\mathbb{E}^{2}(X)+\mathbb{E}(Y^{2})-\mathbb{Y}^{2}(X)+2\mathbb{E}(XY)-2\mathbb{E}^{2}(XY)$$
+$$=var(X)+var(Y)+2cov(X,Y)$$
+
+
+\subsection{}
+直接使用贝叶斯公式：
+
+$$P(ill|positive)=\frac{P(ill)P(positive|ill)}{P(ill)P(positive|ill)+P(health)P(positive|health)}$$
+$$=0.0098$$
+
+\subsection{三门问题}
+经典的三门问题，答案为b，即换一个选项，分子和分母中的信息量差异导致了最后的失衡，直接使用贝叶斯公式：
+$$P(prize_{1}|choose_{1},open_{3})=\frac{P(choose_{1})P(prize_{1})P(choose_{3}|prize_{1},choose_{1})}{P(choose_{1})P(open_{3}|choose_{1})}$$
+
+$$=\frac{P(prize_{1})P(choose_{3}|prize_{1},choose_{1})}{P(open_{3}|choose_{1})}$$
+
+$$=\frac{\frac{1}{3}\cdot\frac{1}{2}}{\frac{1}{3}\cdot \frac{1}{2} + \frac{1}{3}\cdot 0 + \frac{1}{3} \cdot 1}=\frac{1}{3}$$
+
+最后一步在分母上使用了贝叶斯全概率公式，对隐含变量（奖品的真实所在地）进行了求和。
+
+\subsection{条件独立性}
+a选ii，b选择i，ii，iii。直接使用贝叶斯公式即可。
+
+\subsection{}
+问题在于当给定的条件变量变多时，两两独立性不能保证此时的独立性。
+
+\subsection{联合分布可分解时的条件独立性}
+证明方向1：记$g(x,z)=p(x|z)$，$h(y,z)=p(y|z)$。
+
+证明方向2：记$p(x|z)=\sum_{y}g(x,z)h(y,z)$，$p(y|z)=\sum_{x}g(x,z)h(y,z)$。
+
+这道题目给出了一个重要的结论：条件独立的贝叶斯网络结构可以直接转化为马尔科夫场结构而不需在图的层面进行改变。
+
+\subsection{条件独立性}
+从马尔科夫场的视角，两个判断均为正确。
+
+\subsection{逆伽马分布}
+直接使用结论：
+$$p(y)=p(x)|\frac{dx}{dy}|$$
+
+即得结果。
+
+\subsection{}
+不另做证明。
+
+\subsection{互信息公式推导}
+$$I(X;Y)=\sum_{x,y}p(x,y) \log \frac{p(x,y)}{p(x)p(y)}=\sum_{x,y}p(x,y)\log \frac{p(x|y)}{p(x)}$$
+$$=H(X)-H(X|Y)$$
+
+在贝叶斯公式中使用$p(y)$来除可以得到另一半结论，也可以使用$H(X,Y)=H(X)+H(X|Y)$来进行对称的变换。
+
+\subsection{协变正态随机变量的互信息}
+利用$I(X_{1};X_{2})=H(X_{1})+H(X_{2})-H(X_{1},X_{2})$，以及高斯分布的边缘概率：
+$$p(X_{1})=p(X_{2})=N(0,\sigma^{2})$$
+
+得到：
+$$I(X_{1};X_{2})=-\frac{1}{2}\log_{2}(1-\rho^{2})$$
+
+多元正态分布的微分熵求法可见《信息论基础》8.4节。
+
+\subsection{}
+利用2.12的结论，结合互信息的物理意义可理解。
+
+\subsection{S-投影}
+见《概率图模型——原理与技术》8.5.2节
+
+\subsection{贝塔分布形式}
+Beta分布的mode通过求导数直接可得，其均值和方差的计算通过利用Gamma函数的性质：
+$$\frac{\Gamma(a+1)}{\Gamma(a)}=a$$
+
+易得。
+
+\subsection{}
+基础的概率问题，以$m$记最右边的点，则：
+$$p(m>x)=(1-x)^{2}$$
+
+$$\mathbb{E}(m)=\int x\cdot p(m=x)dx=\int p(m>x)dx=\int_{0}^{1}(1-x)^{2}dx=\frac{1}{3}$$
+
+
+
+\newpage
+\section{离散数据的生成模型}
+\subsection{伯努利分布的最大似然估计}
+最大似然概率的表达式为：
+$$p(D|\theta) = \theta^{N_{1}}(1-\theta)^{N_{0}}$$
+
+其对数形式为：
+$$\ln p(D|\theta) = N_{1}\ln \theta + N_{0} \ln (1-\theta)$$
+
+求导数并置零：
+$$\frac{\partial}{\partial \theta} \ln p(D|\theta) = \frac{N_{1}}{\theta} -\frac{N_{0}}{1-\theta}=0$$
+
+得到所要求的原书3.22式：
+$$\theta = \frac{N_{1}}{N_{1}+N_{0}}=\frac{N_{1}}{N}$$
+
+\subsection{贝塔-伯努利模型的边缘似然}
+Beta-Bernoulli/Binomial模型对于这样一个问题场景建模：一个随机发生器从一个有限的离散状态空间取值。本题面向状态空间大小为2的情况并求归一化因子$\frac{1}{p(D)}$。
+
+似然概率为：
+$$p(D|\theta) = \theta^{N_{1}}(1-\theta)^{N_{0}}$$
+
+先验概率为：
+$$p(\theta|a,b)=Beta(\theta|a,b)=\theta^{a-1}(1-\theta)^{b-1}$$
+
+后验概率为：
+$$p(\theta|D) \propto p(D|\theta)\cdot p(\theta|a,b)=\theta^{N_{1}+a-1}(1-\theta)^{N_{0}+b-1}$$
+$$=Beta(\theta|N_{1}+a,N_{0}+b)$$
+
+预测分布：
+$$p(x_{new}=1|D)=\int p(x_{new}=1|\theta)\cdot p(\theta|D) d\theta$$
+$$=\int \theta p(\theta|D) d\theta = \mathbb{E}(\theta) = \frac{N_{1}+a}{N_{1}+a+N_{0}+b}$$
+
+来求$p(D)$，其中$D=1,0,0,1,1$：
+$$p(D)=p(x_{1})p(x_{2}|x_{1})p(x_{3}|x_{2},x_{1})...p(X_{N}|x_{N-1},X_{N-2},...X_{1})$$
+$$=\frac{a}{a+b}\frac{b}{a+b+1}\frac{b+2}{a+b+2}\frac{a+1}{a+b+3}\frac{a+2}{a+b+4}$$
+
+记$\alpha=a+b,\alpha_{1}=a,\alpha_{0}=b$，得到式3.83。
+
+再利用$[(\alpha_{1})..(\alpha_{1}+N_{1}-1)] = \frac{(\alpha_{1}+N_{1}-1)!}{(\alpha_{1}-1)!}=\frac{\Gamma(\alpha_{1}+N_{1})}{\Gamma(\alpha_{1})}$
+
+可得式3.80。
+
+\subsection{贝塔-伯努利模型的后验预测}
+Straightforward algebra.
+
+\subsection{}
+首先由：
+$$p(\theta|X<3)\propto p(\theta)p(X<3|\theta)$$
+
+对于$p(X<3|\theta)$，分两种情况$(X=1,X=2)$计算即可。 
+
+\subsection{}
+由：
+$$\phi=\log \frac{\theta}{1-\theta}$$
+
+以及：
+$$p(\theta)=p(\phi)|\frac{d\phi}{d\theta}| \propto \frac{1}{\theta(1-\theta)} \propto Beta(\theta|0,0)$$
+
+\subsection{泊松分布的最大似然估计}
+似然概率为：
+$$p(D|Poi,\lambda)=\prod_{n=1}^{N}Poi(x_{n}|\lambda) = \exp(-\lambda N)\cdot \lambda^{\sum_{n=1}^{N}x_{n}}\cdot\frac{1}{\prod_{n=1}^{N}x_{n}!}$$
+
+对其对数求导置零：
+$$\frac{\partial}{\partial \lambda}p(D|Poi,\lambda) = \exp(-\lambda N)\lambda^{\sum x- 1}\left\{ -N\lambda + \sum_{n=1}^{N}x_{n} \right\}$$
+
+得到：
+$$\lambda = \frac{\sum_{n=1}^{N}x_{n}}{N}$$
+
+即速率的最大似然估计是数据集的均值。
+
+\subsection{泊松分布的贝叶斯分析}
+因为：
+$$p(\lambda|D)\propto p(\lambda)p(D|\lambda) \propto \exp(-\lambda(N+b)) \cdot \lambda^{\sum_{n=1}^{N}x_{n}+a-1} = Ga(a+\sum x, N+b)$$
+
+可以认为，这个先验分布意味着引入$b$个先验观测量，其均值为$\frac{a}{b}$。
+
+\subsection{均匀分布的最大似然估计}
+显然地，如果$a < max(x_{n})$，则似然概率为0，故首先要求$a \geq max(x_{n})$，此时似然概率为：
+$$p(D|a)=\prod_{n=1}^{N}\frac{1}{2a}$$
+
+这是和$a$单调负相关的函数，所以必有最大似然估计为$a = max(x_{n})$（就像在下一题题干中给出的一样），对于新$x_{n+1}$的估计在$[-a,a]$间平均分布。
+
+从模型的意义上而言，平均分布的最大似然估计通过一个$max$算子来确定性地计算，鲁棒性相当糟糕。其根本原因是$p(x|a)$的值在$a$变化时有可能突变。
+
+\subsection{均匀分布的贝叶斯分析}
+均匀分布的共轭先验分布定义为Pareto分布：
+$$p(\theta)=Pa(\theta|K,b)=Kb^{K}\theta^{-(K+1)}[\theta \geq b]$$
+
+记$m=max(x_{n})$，联合分布为：
+$$p(\theta,D) = p(\theta)p(D|\theta) = Kb^{K}\theta^{-(K+N+1)}[\theta \geq b][\theta \geq m]$$
+
+观测集置信为：
+$$p(D)=\int p(D,\theta) d\theta=\frac{Kb^{K}}{(N+K)max(m,b)^{N+K}}$$
+
+记$\mu = max(m,b)$，后验分布为：
+$$p(\theta|D)= \frac{p(\theta,D)}{p(D)} =\frac{(N+K)\mu^{N+K}[\theta \geq \mu]}{\theta^{N+K+1}}=Pa(\theta|N+K,\mu)$$
+
+\subsection{}
+Straigutforward calculation.
+
+\subsection{指数分布的贝叶斯分析}
+最大似然估计：
+$$\ln p(D|\theta) = N\ln \theta - \theta \sum_{n=1}^{N}x_{n}$$
+$$\frac{\partial}{\partial \theta} \ln p(D|\theta) = \frac{N}{\theta} - \sum_{n=1}^{N}x_{n}$$
+$$\theta_{ML} = \frac{N}{\sum_{n=1}^{N}x_{n}}$$
+
+从形式上容易验证：指数分布本身不是指数分布的共轭先验分布。指数分布的共轭先验分布是Gamma分布：
+$$p(\theta|D) \propto p(\theta)p(D|\theta) = Gam(\theta|a,b)p(D|\theta) = Gam(\theta|N+a,b+\sum x_{n})$$
+
+可以认为Gamma分布的先验意义是：引入$a-1$个先验观测量，其和为$b$。
+
+选择形式错误的先验分布是c问题中专家的问题所在。
+
+\subsection{}
+Straightforward calculation.
+
+\subsection{}
+Unsolved
+
+\subsection{}
+Straightforward calculation.
+
+\subsection{}
+Straightforward algebra.
+
+\subsection{贝特分布参数设定}
+对于Beta分布的双参数$\alpha_{1}$和$\alpha_{2}$，通过期望联系起来：
+$$\alpha_{2}=\alpha_{1}(\frac{1}{m}-1)=f(\alpha_{1})$$
+
+其次进行积分：
+$$\int_{l}^{u} \frac{1}{B(\alpha_{1},f(\alpha_{1}))}\theta^{\alpha_{1}}(1-\theta)^{f(\alpha_{1})}=u(\alpha_{1})$$
+
+通过数值方法取$\alpha_{1}$使得$u(\alpha_{1}) \rightarrow 0.95$即可。
+
+\subsection{均匀先验分布下贝塔-二项模型的边缘似然}
+本题要求Beta-Binomial模型中的边缘分布：
+$$p(N_{1}|N)=\int_{0}^{1} p(N_{1},\theta|N) d\theta = \int_{0}^{1} p(N_{1}|\theta,N)p(\theta)d\theta$$
+
+题干给出条件：
+$$p(N_{1}|\theta,N)=Bin(N_{1}|\theta,N)$$
+$$p(\theta) = Beta(1,1)$$
+
+所以：
+$$p(N_{1}|N)=\int_{0}^{1} \binom{N}{N_{1}} \theta^{N_{1}} (1-\theta)^{N-N_{1}} d\theta $$
+$$=\binom{N}{N_{1}}B(N_{1} +1,N-N_{1}+1)=\frac{N!}{N_{1}!(N-N_{1})!}\frac{N_{1}!(N-N_{1})!}{(N+1)!}$$
+$$=\frac{1}{N+1}$$
+
+\subsection{}
+Straightforward calculation.
+
+\subsection{朴素贝叶斯分类器中的特征关联强度}
+本题考虑朴素贝叶斯分类器（NBC）中关于分类不敏感词汇（例如NLP中的停用词）的相关事宜。
+
+以$x_{iw}$为示性变量表示单词$w$是否出现在文档$i$中，以$\theta_{cw}$表示在文档类型$c$中出现单词$w$的概率。此时对于一个给定的类型，一篇文档的似然概率为：
+$$p(\textbf{x}_{i}|c,\theta)=\prod_{w=1}^{W}\theta_{cw}^{x_{iw}}(1-\theta_{cw})^{1-x_{iw}}$$
+
+其对数形式为：
+$$\log p(\textbf{x}_{i}|c,\theta)=\sum_{w=1}^{W}x_{iw} \log \frac{\theta_{cw}}{1-\theta_{cw}}+\sum_{w=1}^{W}\log (1-\theta_{cw})$$
+
+可以记成：
+$$\log p(\textbf{x}_{i}|c,\theta)=\phi(\textbf{x}_{i})^{T} \beta_{c}$$
+其中：
+$$\phi(\textbf{x}_{i})=(\textbf{x}_{i},1)^{T}$$
+$$\beta_{c}=(\log \frac{\theta_{c1}}{1-\theta_{c1}},...\sum_{w=1}^{W}\log(1-\theta_{cw}))^{T}$$
+
+对于b中的二类分类问题：
+$$p(c_{1}|\textbf{x}_{i}) = \frac{p(c_{1})p(\textbf{x}_{i}|c_{1})}{p(\textbf{x}_{i})}$$
+
+故：
+$$\log \frac{p(c_{1}|\textbf{x}_{i})}{p(c_{2}|\textbf{x}_{i})} = \log \frac{p(c_{1})}{p(c_{2})} + \log p(x_{i}|c_{1}) - \log p(x_{i}|c_{2})$$
+
+代入均匀分布先验假设：
+$$\log \frac{p(c_{1}|\textbf{x}_{i})}{p(c_{2}|\textbf{x}_{i})} = \phi(\textbf{x}_{i})^{T}(\beta_{c_{1}}-\beta_{c_{2}})$$
+
+在问题b中，考察停用词，它们的缺失应当不影响后验概率之比$\frac{p(c_{1}|\textbf{x})}{p(c_{2}|\textbf{x})}$。因为NBC假设各个单词独立，所以我们只需要考虑对应某个单词$w_{j}$导致的$\log \frac{p(c_{1}\textbf{x}_{i})}{p(c_{2}|\textbf{x}_{i})}$中的分量，即：
+$$x_{ij}(\beta_{c_{1},j}-\beta_{c_{2},j})$$
+
+显然，只要$\beta_{c_{1},j}=\beta_{c_{2},j}$，则这个单词的存在与否不影响分类，这一条件蕴含：
+$$\theta_{c_{1},w_{j}}=\theta_{c_{2},w_{j}}$$
+
+考察在赋予先验分布$p(\theta_{cw} = Beta(1,1))$时的后验分布，记c类文档总数为$N_{c}$：
+$$p(\theta_{cw}|\textbf{X})=p(\theta_{cw})\prod_{i=1}^{N_{c}}p(\textbf{i}|\theta_{cw})$$
+$$=\prod_{i=1}^{N_{c}}\theta_{cw}^{x_{iw}}(1-\theta^{cw})^{1-x_{iw}}=\theta_{cw}^{\sum x_{iw}}(1-\theta_{cw})^{N_{c}-\sum x_{iw}}$$
+
+即服从Beta($\sum x_{iw} + 1,N_{c}-\sum x_{iw} + 1$)，其均值为：
+$$mean(\theta_{cw})=\frac{\sum x_{iw} + 1}{N_{c} + 2}$$
+
+考虑一个单词$w_{c}$出现在所有的文档中，并且$c_{1}$和$c_{2}$类各有$N_{1}$与$N_{2}$篇文档。此时：
+$$mean(\theta_{c_{1},w_{c}})=1-\frac{1}{2+N_{1}}$$
+$$mean(\theta_{c_{2},w_{c}})=1-\frac{1}{2+N_{2}}$$
+
+可见如果$N_{1} \neq N_{2}$，则使用平均值估计的话，单词$w_{c}$仍旧会对分类产生影响，但这影响本身会随着样本数量的增加（即$N$的增加）而降低。
+
+\subsection{}
+NBC的实质是将作为特征的结点之间的所有连接在PGM的层面切断，而一个全连接的图包含$O(D^{2})$数量的边，以及$O(2^{D})$级别的参数。相对应的分析可见概率图模型部分。
+
+\subsection{朴素贝叶斯分类器中的互信息}
+互信息式用来度量一个特征$X$和分类$Y$的关联性：
+$$I(X;Y)=\sum_{x_{j}}\sum_{y}p(x_{j},y)\log \frac{p(x_{j},y)}{p(x_{j})p(y)}$$
+
+在特征为二进制表示时，第一项求和仅包含两种情况，代入$\pi_{c}=p(y=c),\theta_{jc}=p(x_{j}=1|y=c),\theta_{j}=p(x_{j}=1)$：
+$$I_{j}=\sum_{c}p(x_{j}=1,c)\log \frac{p(x_{j}=1,c)}{p(x_{j}=1)p(c)} + \sum_{c}p(x_{j}=0,c)\log \frac{p(x_{j}=0,c)}{p(x_{j}=0)p(c)}$$
+$$=\sum_{c}\pi_{c}\theta_{jc} \log \frac{\theta_{jc}}{\theta_{j}} + (1-\theta_{jc})\pi_{c} \log \frac{1-\theta_{jc}}{1-\theta_{j}}$$
+
+得到式3.76。
+
+\subsection{}
+Straightforward calculation.
+
+\newpage
+\section{高斯模型}
+\subsection{}
+$$cov(X,Y)=\int\int (X-\mathbb{E}(X))(Y-\mathbb{E}(Y)) p(X,Y)dXdY$$
+$$=\int_{-1}^{1}X(X^{2}-\frac{1}{\sqrt{3}})dX=0$$
+
+最后一步是因为积分的是一个奇函数。
+
+$$\rho(X,Y)=\frac{cov(X,Y)}{\sqrt{var(X)var(Y)}}=0$$
+
+\subsection{}
+求随机变量$Y$的分布密度函数：
+$$p(Y=a)=0.5 \cdot p(X=a) + 0.5 \cdot p(X=-a)=p(X=a)$$
+
+利用$X$关于$0$的对称性，得到$Y$也服从$(0,1)$的正态分布。
+
+利用题干信息：
+$$cov(X,Y)=\mathbb{E}(XY)-\mathbb{E}(X)-\mathbb{E}(Y) = \mathbb{E}_{W}(\mathbb{E}(XY|W))$$
+$$=0.5\cdot(\mathbb{E}(X^{2})+\mathbb{E}(-X^{2}))=0$$
+
+\subsection{}
+不失一般性，假设：
+$$\mathbb{E}(X)=\mathbb{E}(Y)=0$$
+$$\mathbb{E}(X^{2})=\mathbb{E}(Y^{2})=1$$
+
+即：
+$$\int X^{2}p(X)dX = \int Y^{2}p(Y) dY = 1$$
+
+则：
+$$\int \int X^{2}Y^{2}p(X,Y)dXdY = \int X^{2} (\int Y^{2}p(Y)p(X|Y)dY)dX$$
+
+又：
+$$p(X)=\int p(X,Y)dY = \int p(Y)p(X|Y)dY \geq \int Y^{2}p(Y)p(X|Y)dY$$
+
+所以得证：
+$$\mathbb{E}(X^{2}Y^{2}) \leq \int X^{2}p(X)dX = 1$$
+
+\subsection{}
+当$Y=aX+b$时：
+$$\mathbb{E}(Y)=a\mathbb{E}(x)+b$$
+$$var(Y)=a^{2}var(X)$$
+
+所以：
+$$cov(X,Y)=\mathbb{E}(XY)-\mathbb{E}(X)\mathbb{E}(Y)=a\mathbb{E}(X^{2})+b\mathbb{E}(X)-a\mathbb{E}^{2}(X)-b\mathbb{E}(X)$$
+$$=a\cdot var(X)$$
+
+$$var(X)var(Y) = a^{2}\cdot var(X)$$
+
+所以：
+$$\rho(X,Y) = \frac{a}{|a|}$$
+
+\subsection{}
+SVD对角化后对于每个维度独立地积分（此时转化为一维正态分布的归一化）证明即可。
+
+\subsection{}
+Straightforward algebra.
+
+\subsection{}
+利用4.69的结论，Straightforward algebra.
+
+\subsection{}
+Practical...
+
+\subsection{已知方差时的两个传感器度数}
+分别以$Y^{(1)}$和$Y^{(2)}$记两个观测集，大小分别为$N_{1},N_{2}$首先求似然概率：
+$$p(Y^{(1)},Y^{(2)}|\mu)=\prod_{n_{1}=1}^{N_{1}}p(Y^{(1)}_{n_{1}}|\mu)\prod_{n_{2}=1}^{N_{2}}p(Y^{(2)}_{n_{2}}|\mu)$$
+$$\propto \exp\left\{ A\cdot \mu^{2} + B \cdot \mu \right\}$$
+
+其中：
+$$A=-\frac{N_{1}}{2v_{1}}-\frac{N_{2}}{2v_{2}}$$
+$$B=\frac{1}{v_{1}}\sum_{n_{1}=1}^{N_{1}}Y^{(1)}_{n_{1}} + \frac{1}{v_{2}}\sum_{n_{2}=1}^{N_{2}}Y^{(2)}_{n_{2}}$$
+
+通过求导数置零可得最大似然估计：
+$$\mu_{ML} = -\frac{B}{2A}$$
+
+该模型的共轭先验分布应该具有正比于$\exp\left\{A\cdot\mu^{2} + B\cdot\mu\right\}$的形式，故取正态分布为先验分布：
+$$p(\mu|a,b) \propto \exp\left\{ a\cdot \mu^{2} + b\cdot \mu \right\}$$
+
+后验分布的形式为：
+$$p(\mu|Y) \propto \exp\left\{ (A+a)\cdot \mu^{2} + (B+b)\cdot \mu \right\}$$
+
+最大后验估计为：
+$$\mu_{MAP} = -\frac{B+b}{2(A+a)}$$
+
+容易发现，当$A$和$B$的绝对值随着观测次数的增加而上升时：
+$$\mu_{MAP} \rightarrow \mu_{ML}$$
+
+后验分布也是正态分布，通过变换幂函数中$\mu$各次项的系数可得：
+$$\sigma^{2}_{MAP} = -\frac{1}{2(A+a)}$$
+$$mean_{MAP} = \sigma^{2}_{MAP}(B+b)$$
+
+\subsection{正态分布的边缘和条件分布}
+见PRML第二章。
+
+\subsection{正态-逆Wishart分布}
+本题考虑多维正态分布（MVN）的贝叶斯估计。
+
+MVN的似然估计为：
+$$p(\textbf{X}|\mu,\Sigma) = (2\pi)^{-\frac{ND}{2}}|\Sigma|^{-\frac{N}{2}}\exp\left\{ -\frac{1}{2}\sum_{n=1}^{N}(\textbf{x}_{i}-\mu)^{T}\Sigma^{-1}(\textbf{x}_{i}-\mu) \right\}$$
+
+4.195的处理为：
+$$\sum_{n=1}^{N}(\textbf{x}_{i}-\mu)^{T}\Sigma^{-1}(\textbf{x}_{i}-\mu) =\sum_{n=1}^{N}(\bar{\textbf{x}} - \mu + (\textbf{x}_{i} - \bar{\textbf{x}}))^{T}\Sigma^{-1}(\bar{\textbf{x}} - \mu + (\textbf{x}_{i} - \bar{\textbf{x}})) $$
+$$=N(\bar{\textbf{x}}-\mu)^{T}\Sigma^{-1}(\bar{\textbf{x}}-\mu) + \sum_{n=1}^{N}(\textbf{x}_{i} - \bar{\textbf{x}})^{T}\Sigma^{-1}(\textbf{x}_{i}-\bar{\textbf{x}})$$
+$$=N(\bar{\textbf{x}}-\mu)^{T}\Sigma^{-1}(\bar{\textbf{x}}-\mu) + Tr\left\{\Sigma^{-1}\sum_{n=1}^{N}(\textbf{x}_{i}-\bar{\textbf{x}})(\textbf{x}_{i} - \bar{\textbf{x}})^{T}\right\}$$
+$$=N(\bar{\textbf{x}}-\mu)^{T}\Sigma^{-1}(\bar{\textbf{x}}-\mu) + Tr\left\{ \Sigma^{-1} \textbf{S}_{\bar{\textbf{x}}}\right\}$$
+
+第二个等式利用了平均值条件消去了一项。
+
+MVN的参数$(\mu,\Sigma)$的共轭先验分布为Normal-inverse-Wishart（NIW）分布，定义为：
+$$NIW(\mu,\Sigma|\textbf{m}_{0},k_{0},v_{0},\textbf{S}_{0}) = N(\mu|\textbf{m}_{0},\frac{1}{k_{0}}\Sigma)\cdot IW(\Sigma|\textbf{S}_{0},v_{0})$$
+$$=\frac{1}{Z} |\Sigma|^{-\frac{v_{0} + D + 2}{2}}\exp\left\{ -\frac{k_{0}}{2}(\mu-\textbf{m}_{0})^{T}\Sigma^{-1}(\mu-\textbf{m}_{0})-\frac{1}{2}Tr\left\{ \Sigma^{-1}\textbf{S}_{0} \right\} \right\}$$
+
+此时已经很容易给出后验分布的形式：
+$$p(\mu,\Sigma|\textbf{X}) \propto |\Sigma|^{-\frac{v_{\textbf{X}}+D+2}{2}}\exp\left\{ -\frac{k_{\textbf{X}}}{2}(\mu-\textbf{m}_{\textbf{X}})^{T}\Sigma^{-1}(\mu-\textbf{m}_{\textbf{X}}) - \frac{1}{2}Tr\left\{  \Sigma^{-1} \textbf{S}_{\textbf{X}}\right\} \right\}$$
+
+其中：
+$$k_{\textbf{X}} = k_{0} + N$$
+$$v_{\textbf{X}} = v_{0} + N$$
+$$\textbf{m}_{\textbf{X}} = \frac{N\bar{\textbf{x}}+k_{0}\textbf{m}_{0}}{k_{\textbf{X}}}$$
+
+通过对齐$|\Sigma|$，$\mu^{T}\Sigma^{-1}\mu$和$\mu^{T}$的次数可得。
+
+再利用$A^{T}\Sigma^{-1}A = Tr\left\{ A^{T}\Sigma^{-1}A \right\} = Tr\left\{ \Sigma^{-1}AA^{T} \right\}$对齐幂函数中的常数项可得：
+$$N \bar{\textbf{x}} \bar{\textbf{x}}^{T} + \textbf{S}_{\bar{\textbf{X}}} + k_{0}\textbf{m}_{0}\textbf{m}_{0}^{T} + \textbf{S}_{0} = k_{\textbf{X}}\textbf{m}_{\textbf{X}}\textbf{m}_{\textbf{X}}^{T} + \textbf{S}_{\textbf{X}}$$
+
+所以：
+$$\textbf{S}_{\textbf{X}} = N \bar{\textbf{x}} \bar{\textbf{x}}^{T} + \textbf{S}_{\bar{\textbf{X}}} + k_{0}\textbf{m}_{0}\textbf{m}_{0}^{T} + \textbf{S}_{0} - k_{\textbf{X}}\textbf{m}_{\textbf{X}}\textbf{m}_{\textbf{X}}^{T} $$
+
+利用平均值的定义可以得到4.214的结果，因为：
+$$\textbf{S}=\sum_{n=1}^{N}\textbf{x}_{i}\textbf{x}_{t}^{T} = \textbf{S}_{\bar{\textbf{X}}} + N \bar{\textbf{x}}\bar{\textbf{x}}^{T}$$
+
+所以MVN的后验分布为$NIW(\textbf{m}_{\textbf{X}},k_{\textbf{X}},v_{\textbf{X}},\textbf{S}_{\textbf{X}})$
+
+\subsection{}
+Straightforward calculation.
+
+本题的关键点在于模型判别条件4.273。它指出：更复杂的模型（参数更多）虽然能够带来更大的似然性，但是贝叶斯方法会对于其过多的参数本身进行惩罚，惩罚的度量和似然性的关系式由4.273给出，因此更深刻的讨论放在5.3.2.4节中进行。
+
+\subsection{高斯后验分布的置信区间}
+根据题意，对于一个一维的正态分布，假设其均值服从先验分布：
+$$p(\mu) = N(\mu|\mu_{0},\sigma^{2}_{0} = 9)$$
+
+而实际观测变量服从分布：
+$$p(x) = N(x|\mu,\sigma^{2}=4)$$
+
+观测$n$个变量，要求$\mu$的后验分布概率密度函数在一个长度为1的区间的概率和为0.95。
+
+首先计算$\mu$的后验分布：
+$$p(\mu|D) \propto p(\mu)p(D|\mu) = N(\mu|\mu_{0},\sigma^{2}_{0})\prod_{i=1}^{n}N(x_{n}|\mu,\sigma^{2})$$
+$$\propto \exp\left\{-\frac{1}{2\sigma^{2}_{0}}(\mu-\mu_{0})^{2}  \right\} \prod_{i=1}^{n}\exp\left\{  -\frac{1}{2\sigma^{2}}(x_{i}-\mu)^{2}\right\}$$
+$$=\exp\left\{ (-\frac{1}{2\sigma_{0}^{2}}-\frac{n}{2\sigma^{2}})\mu^{2} + ... \right\}$$
+
+所以后验方差为：
+$$\sigma^{2}_{post}=\frac{\sigma^{2}_{0}\sigma^{2}}{\sigma^{2}+n\sigma^{2}_{0}}$$
+
+由于正态分布0.95的质量集中在$-1.96\sigma$到$1.96\sigma$之间，我们得到：
+$$n \geq 611$$
+
+\subsection{一维高斯分布的最大后验估计}
+考察一维正态分布后验估计的一些直觉性质，首先假设分布的方差$\sigma^{2}$已知，均值$\mu$服从确定均值$m$、方差$s^{2}$的正态分布，首先类似上一题给出后验分布的形式：
+$$p(\mu|X) \propto p(\mu)p(X|\mu)$$
+
+类似上一题，我们解出后验分布的形式依旧为正态分布，其参数通过考察幂函数内$\mu$的各次系数得到，其中二次项系数为：
+$$-\frac{1}{2s^{2}}-\frac{N}{2\sigma^{2}}$$
+
+一次项系数为：
+$$\frac{m}{s^{2}}+\frac{\sum_{n=1}^{N}x_{n}}{\sigma^{2}}$$
+
+所以此时的方差和均指分别为：
+$$\sigma^{2}_{post} = \frac{s^{2}\sigma^{2}}{\sigma^{2}+Ns^{2}}$$
+$$\mu_{post} = (\frac{m}{s^{2}}+\frac{\sum_{n=1}^{N}x_{n}}{\sigma^{2}})\cdot \sigma^{2}_{post}$$
+
+最大似然估计为：
+$$\mu_{ML}=\frac{\sum_{n=1}^{N}x_{i}}{N}$$
+
+可以发现当$N$增大时，$\mu_{post}$趋向于$\mu_{ML}$。
+
+如果只考虑$s^{2}$的变化，当其增大时，后验估计趋向于最大似然估计；当其减小时，后验估计趋向于先验均值。先验方差的物理意义是我们对于这个先验假设的信任程度，直觉上，先验方差越大代表对于先验假设越不信任，所以结果趋向于似然估计，否则趋向于先验估计。
+
+\subsection{}
+利用关系：
+$$\textbf{m}_{n+1}=\frac{n\textbf{m}_{n}+\textbf{x}_{n+1}}{n+1}$$
+
+剩余部分为Straightforward algebra.
+
+\subsection{高斯分布的似然比值}
+考虑一个二类分类器，两个类的生成概率均为正态分布$p(x|y=C_{i})=N(x|\mu_{i},\Sigma_{i})$，贝叶斯公式直接给出：
+$$\log \frac{p(y=1|x)}{p(y=0|x)} = \log \frac{p(x|y=1)}{p(x|y=0)} + \log \frac{p(y=1)}{p(y=0)}$$
+
+上式右侧的第二项是先验概率比的对数，先考虑似然概率比的对数。
+
+当两类协方差矩阵任意时：
+$$\frac{p(x|y=1)}{p(x|y=0)} = \sqrt{\frac{|\Sigma_{0}|}{|\Sigma_{1}|}}\exp\left\{ -\frac{1}{2}(x-\mu_{1})^{T}\Sigma_{1}^{-1}(x-\mu_{1}) + \frac{1}{2}(x-\mu_{0})^{T}\Sigma_{0}^{-1}(x-\mu_{0}) \right\}$$
+
+没有可化约的项，不过值得注意的是此时似然估计给出的决策边界是一个$D$维空间中的二次曲面。
+
+当两个协方差矩阵都等于$\Sigma$时：
+$$\frac{p(x|y=1)}{p(x|y=0)} = \exp\left\{x^{T}\Sigma^{-1}(\mu_{1}-\mu_{0})-\frac{1}{2}Tr\left\{ \Sigma^{-1}(\mu_{1}\mu_{1}^{T}-\mu_{0}\mu_{0}^{T}) \right\} \right\}$$
+
+此时决策边界变为一个平面。
+
+对于协方差矩阵为同一个对角阵的情况，解析形式和上式相仿，不过一些矩阵乘法可以转换成向量内积。
+
+对于协方差矩阵为同一个单位矩阵的倍数时，上式中的矩阵乘法可以继续转化为数乘。
+
+\subsection{}
+Practise by youself.
+
+\subsection{}
+Straightforward calculation.
+
+\subsection{}
+直接计算（参数条件是共有的，所以略去）：
+$$p(y=1|\textbf{x}) = \frac{p(y=1)p(\textbf{x}|y=1)}{p(y=0)p(\textbf{x}|y=0)+p(y=1)p(\textbf{x}|y=1)}$$
+
+假设先验分布相同，上式变为：
+$$\frac{p(\textbf{x}|y=1)}{p(\textbf{x}|y=0)+p(\textbf{x}|y=1)}$$
+$$=\frac{1}{k^{\frac{D}{2}}\exp\left\{-\frac{1}{2}(\textbf{x}-\mu_{0})^{T}\Sigma_{0}^{-1}(\textbf{x}-\mu_{0}) +\frac{1}{2} (\textbf{x}-\mu_{1})^{T}\Sigma_{1}^{-1}(\textbf{x}-\mu_{1}) \right\}+ 1}$$
+$$=\frac{1}{k^{\frac{D}{2}}\exp\left\{ -\frac{1}{2}(1-\frac{1}{k})\textbf{x}^{T}\Sigma_{0}^{-1}\textbf{x}+\textbf{x}^{T}\textbf{u}+c \right\} + 1}$$
+
+这里利用了：
+$$|\Sigma_{1}|=|k\Sigma_{0}|=k^{D}|\Sigma_{0}|$$
+
+这里的决策边界依然为一个二次曲面，当$k=1$时退化为平面，当$k$增大时，决策面形成一个包络$\mu_{0}$的曲面，当$k$趋向于无穷大时，决策面退化为$y=0$类型的等概率面，此时意味着所有以外的区域均从属于一个方差无穷大的正态分布。
+
+\subsection{}
+我们直接利用这个结论“最大似然估计能够过拟合数据，过拟合的程度一般而言正相关于模型复杂度。”来进行定性分析。
+
+GaussI假设协方差矩阵正比于单位矩阵；
+
+GaussX对于协方差矩阵不做假设；
+
+LinLog等价于假设多个协方差矩阵相等；
+
+QuadLog对于协方差矩阵不做假设。
+
+四种方案同时假设给定类型时的生成概率服从正态分布，显然地，从复杂程度来看：
+
+QuadLog $=$GaussX $>$ LinLog $>$ GaussI
+
+所以最大似然估计的准确率按照上述顺序排列。
+
+对于e问，一般而言不一定成立，因为乘积更大并不蕴含和也更大。
+
+\subsection{}
+Straightforward albegra.
+
+\subsection{}
+Straightforward calculation.
+
+\subsection{}
+Practice by yourself.
+
+\newpage
+\section{贝叶斯统计}
+\subsection{共轭先验分布的混合仍是共轭先验分布}
+式5.69和式5.70的推导只需要从贝叶斯公式出发，形式地进行：
+$$p(\theta|D)=\sum_{k}p(\theta,k|D)=\sum_{k}p(k|D)p(\theta|k,D)$$
+
+其中：
+$$p(k|D)=\frac{p(k,D)}{p(D)}=\frac{p(k)p(D|k)}{\sum_{k'}p(k')p(D|k')}$$
+
+\subsection{概率分类的最佳阈值}
+此时的后验损失期望为：
+$$\rho(\hat{y}|x)=\sum_{y}L(\hat{y},y)p(y|x)=p_{0}L(\hat{y},0)+p_{1}L(\hat{y},1)$$
+$$=L(\hat{y},1)+p_{0}(L(\hat{y},0)-L(\hat{y},1))$$
+
+解得选取两种结论导致同等损失期望时：
+$$\hat{p_{0}}=\frac{\lambda_{01}}{\lambda_{01}+\lambda_{10}}$$
+
+当$p_{0} \geq \hat{p_{0}}$时，应该估计为$\hat{y}=0$。
+
+\subsection{分类中的拒绝选项}
+后验损失期望为：
+$$\rho(a|x)=\sum_{c}L(a,c)p(c|x)$$
+
+我们记此时后验概率最大的类别为$\hat{c}$，即：
+$$\hat{c}=argmax_{c} \left\{p(c|x)\right\}$$
+
+则此时的决策行为只有两种：一是$a=\hat{c}$，二是$a=reject$。
+
+选择$a=\hat{c}$时，损失期望：
+$$\rho_{\hat{c}} = (1-p(\hat{c}|x))\cdot \lambda_{s}$$
+
+选择reject行为时，损失期望：
+$$\rho_{reject} = \lambda_{r}$$
+
+选择$a=\hat{c}$而并非reject的条件是：
+$$\rho_{\hat{c}} \geq \rho_{reject}$$
+
+也即：
+$$p(\hat{c}|x) \geq 1-\frac{\lambda_{r}}{\lambda_{s}}$$
+
+\subsection{}
+Straightforward calculation.
+
+\subsection{}
+根据：
+$$\mathbb{E}(\pi|Q)=P\int_{0}^{Q}Df(D)dD-CQ\int_{0}^{Q}f(D)dD+(P-C)Q\int_{Q}^{+\infty}f(D)dD$$
+
+可得：
+$$\frac{\partial}{\partial Q}\mathbb{E}(\pi|Q) = PQf(Q)-C\int_{0}^{Q}f(D)dD-CQf(Q)+(P-C)\int_{Q}^{+\infty}f(D)dD-(P-C)Qf(Q)$$
+
+置其为零，并利用$\int_{0}^{Q}f(D)fD + \int_{Q}^{+\infty}f(D)dD=1$得到平衡条件：
+$$\int_{0}^{Q^{*}}=F(Q^{*})=\frac{P-C}{P}$$
+
+\subsection{}
+Practise by yourself.
+
+\subsection{贝叶斯模型平均提高预测准确率}
+将5.127左右两式分别形式展开并交换求和次序，易得：
+$$\mathbb{E}[L(\Delta,p^{BMA})]=H(p^{BMA})$$
+
+而：
+$$\mathbb{E}[L(\Delta,p^{m})]=\mathbb{E}_{p^{BMA}}[-\log(p^{m})]$$
+
+所以左式减去右式所得差为：
+$$-KL(p^{BMA}||p^{m}) \leq 0$$
+
+所以左式恒小于等于右式。
+
+\subsection{二维离散分布的最大似然估计和模型选择}
+首先易得联合分布$p(x,y|\theta_{1},\theta_{2})$：
+$$p(x=0,y=0)=(1-\theta_{1})\theta_{2}$$
+$$p(x=0,y=1)=(1-\theta_{1})(1-\theta_{2})$$
+$$p(x=1,y=0)=\theta_{1}(1-\theta_{2})$$
+$$p(x=1,y=1)=\theta_{1}\theta_{2}$$
+
+归纳为：
+$$p(x,y|\theta_{1},\theta_{2})=\theta_{1}^{x}(1-\theta_{1})^{(1-x)}\theta_{2}^{\mathbb{I}(x=y)}(1-\theta_{2})^{(1-\mathbb{I}(x=y))}$$
+
+最大似然估计很容易给出：
+$$\theta_{ML}=argmax_{\theta}(\sum_{n=1}^{N}\ln p(x_{n},y_{n}|\theta))$$
+
+其中联合分布如上所示，可得：
+$$\theta_{ML}=argmax_{\theta}(N\ln(\frac{1-\theta_{1}}{1-\theta_{2}})+N_{x}\ln(\frac{\theta_{1}}{1-\theta_{1}}) + N_{\mathbb{I}(x=y)}\ln(\frac{\theta_{2}}{1-\theta_{2}}))$$
+
+当$\textbf{X},\textbf{Y}$独立给出时，两个参数可以独立地估计。
+
+如果进一步将联合分布化为形式：
+$$p(x,y|\theta)=\theta_{x,y}$$
+
+则：
+$$\theta_{ML}=argmax_{\theta}(\sum_{x,y}N_{x,y}\ln \theta_{x,y})$$
+
+再利用归一化条件可进行最大似然估计。
+
+只进行拟合度比较时，参数更多的模型（4参数模型）明显占优，因为其可以过拟合。但进行贝叶斯模型估计时，还需要利用BIC定量计算该过拟合的似然度增加和自由度惩罚的大小。
+
+The rest is straightforward algebra.
+
+\subsection{L1损失函数最优化}
+此时的后验损失期望（此处我们不引起异议地略去条件中的$D$）：
+$$\rho(a) = \int |y-a|p(y)dy = \int_{-\infty}^{a}(a-y)p(y)dy + \int_{a}^{+\infty}(y-a)p(y)dy$$
+$$=a\left\{\int_{-\infty}^{a}p(y)dy - \int_{a}^{+\infty}p(y)dy  \right\} -\int_{-\infty}^{a}yp(y)dy + \int_{a}^{+\infty}yp(y)dy$$
+
+求导：
+$$\frac{\partial}{\partial a}\rho(a) = \left\{\int_{-\infty}^{a}p(y)dy - \int_{a}^{+\infty}p(y)  \right\} + a\cdot 2p(a) - 2a p(a)$$
+
+解得：
+$$\int_{-\infty}^{a}p(y)dy = \int_{a}^{+\infty}p(y) = \frac{1}{2}$$
+
+
+\subsection{}
+给定条件：
+$$L_{FN}=cL_{FP}$$
+
+此时5.115式的临界条件为：
+$$\frac{p(y=1|x)}{p(y=2|x)} = c$$
+
+再利用：
+$$p(y=1|x)+p(y=0|x)=1$$
+
+可得概率阈值为$\frac{c}{1+c}$。
+
+\newpage
+\section{Frequentist统计}
+本节介绍了一种在贝叶斯统计以外的统计思路，和贝叶斯流派的机器学习思想有所出入，习题较基本，可从任何一本概率与统计教材中寻找参考，故不做详细解答。
+
+\newpage
+\section{线性回归}
+\subsection{}
+一开始训练集较少时，训练出来的模型是过拟合于当前数据集的，所以正确率能达到很高。在训练集增大时，模型不得不去学习适应更一般场合的参数，所以侧面地降低了过拟合效应，从而导致准确率降低。
+
+正如7.5.4节所指出的，增大训练集合是除了增加正则项以外的一种重要的扼制过拟合的方法。
+
+\subsection{}
+Straightforward calculation.
+
+\subsection{}
+我们将$\textbf{x}$改成$(\textbf{x}^T{},1)^{T}$使得没有必要额外设置$w_{0}$，此时NLL的形式为：
+$$NLL(\textbf{w})=(\textbf{y}-\textbf{X}\textbf{w})^{T}(\textbf{y}-\textbf{X}\textbf{w})+\lambda \textbf{w}^{T}\textbf{w}$$
+
+所以：
+$$\frac{\partial}{\partial \textbf{w}}NLL(\textbf{w})=2\textbf{X}^{T}\textbf{X}\textbf{w}-2\textbf{X}^{T}\textbf{y}+2\lambda \textbf{w}$$
+
+故：
+$$\textbf{w}=(\textbf{X}^{T}\textbf{X}+\lambda \textbf{I})^{-1}\textbf{X}^{T}\textbf{y}$$
+
+\subsection{线性回归中噪声方差的最大似然估计}
+首先给出似然函数：
+$$p(D|\textbf{w},\sigma^{2})=p(\textbf{y}|\textbf{w},\sigma^{2},\textbf{X})=\prod_{n=1}^{N}p(y_{n}|\textbf{x}_{n},\textbf{w},\sigma^{2})$$
+$$=\prod_{n=1}^{N}N(y_{n}|\textbf{w}^{T}\textbf{x}_{n},\sigma^{2})=\frac{1}{(2\pi\sigma^{2})^{\frac{N}{2}}}\exp\left\{ -\frac{1}{2\sigma^{2}}\sum_{n=1}^{N}(y_{n}-\textbf{w}^{T}\textbf{x}_{n})^{2} \right\}$$
+
+对于$\sigma^{2}$：
+$$\frac{\partial}{\partial \sigma^{2}}\log p(D|\textbf{w},\sigma^{2}) = -\frac{N}{2\sigma^{2}}+\frac{1}{2(\sigma^{2})^{2}}\sum_{n=1}^{N}(y_{n}-\textbf{w}^{T}\textbf{x}_{n})^{2}$$
+
+取得：
+$$\sigma^{2}_{ML}=\frac{1}{N}\sum_{n=1}^{N}(y_{n}-\textbf{w}^{T}\textbf{x}_{n})^{2}$$
+
+\subsection{}
+计算NLL：
+$$NLL(\textbf{w},w_{0})\propto \sum_{n=1}^{N}(y_{n}-w_{0}-\textbf{w}^{T}\textbf{x}_{n})^{2}$$
+
+分别对两个参数求导：
+$$\frac{\partial}{\partial w_{0}}NLL(\textbf{w},w_{0}) \propto -Nw_{0} +\sum_{n=1}^{N}(y_{n}-\textbf{w}^{T}\textbf{x}_{n})$$
+
+$$w_{0,ML}=\frac{1}{N} \sum_{n=1}^{N}(y_{n}-\textbf{w}^{T}\textbf{x}_{n})=\bar{y}-\textbf{w}^{T}\bar{\textbf{x}}$$
+
+对于$\textbf{X}$和$\textbf{y}$分别进行中心化处理：
+$$\textbf{X}_{c}=\textbf{X}-\hat{\textbf{X}}$$
+$$\textbf{y}_{c}=\textbf{y}-\hat{\textbf{y}}$$
+
+此时中心化的数据集均值都为0，所以此时的线性回归模型中没有$w_{0}$这一项，同时可得：
+$$\textbf{w}_{ML}=(\textbf{X}_{c}^{T}\textbf{X}_{c})^{-1}\textbf{X}_{c}^{T}\textbf{y}_{c}$$
+
+\subsection{}
+直接利用习题7.5的结论，Straightforward algebra.
+
+\subsection{在线线性回归的充分统计量}
+a和b题如提示所示。
+
+c将提示中的$x$替代为$y$同理可证。
+
+d题中我们证明：
+$$(n+1)C_{xy}^{(n+1)}=nC_{xy}^{(n)}+x_{n+1}y_{n+1}+n\bar{x}^{(n)}\bar{y}^{(n)}-(n+1)\bar{x}^{(n+1)}\bar{y}^{(n+1)}$$
+
+将两侧的$C_{xy}$展开并代入$\bar{x}^{(n+1)}=\bar{x}^{(n)}+\frac{1}{n+1}(x_{n+1}-\bar{x}^{n})$易证。
+
+e和f题：Practice by yourself.
+
+\subsection{已知噪声方差时的一维贝叶斯线性回归}
+a题：Practice by yourself.
+
+b选择先验分布：
+$$p(\textbf{w}) \propto N(w_{1}|0,1) \propto \exp\left\{ -\frac{1}{2}w_{1}^{2} \right\}$$
+
+将其化约为：
+$$p(\textbf{w})=N(\textbf{w}|\textbf{w}_{0},\textbf{V}_{0}) \propto $$
+$$\exp\left\{ -\frac{1}{2}\textbf{V}_{0,11}^{-1}(w_{0}-w_{00})^{2} - \frac{1}{2}\textbf{V}^{-1}_{0,22}(w_{1}-w_{01})^{2} -\textbf{V}^{-1}_{0,12}(w_{0}-w_{00})(w_{1}-w_{01})\right\}$$
+
+为了使得其形式符合给出的变分先验分布形式，取：
+$$w_{01}=0$$
+$$\textbf{V}_{0,22}^{-1}=1$$
+$$\textbf{V}_{0,11}^{-1}=\textbf{V}_{0,12}^{-1}=0$$
+$$w_{00}=arbitrary$$
+
+注意到虽然给出了precision matrix的形式，但是这是一个奇异（半正定）矩阵，所以这不是一个良好定义的正态分布。
+
+在c中我们考虑参数的后验分布：
+$$p(\textbf{w}|D,\sigma^{2}) =N(\textbf{w}|\textbf{m}_{0},\textbf{V}_{0})\prod_{n=1}^{N}N(y_{n}|w_{0}+w_{1}x_{n},\sigma^{2})$$
+
+考察上式右侧的幂函数中$w_{1}$的二次项和一次项系数，分别为：
+$$-\frac{1}{2}-\frac{1}{2\sigma^{2}}\sum_{n=1}^{N}x_{n}^{2}$$
+$$-\frac{1}{\sigma^{2}}\sum_{n=1}^{N}x_{n}(w_{0}-y)$$
+
+可得参数$w_{1}$的后验方差和后验均值为：
+$$\sigma^{2}_{post}=\frac{\sigma^{2}}{\sigma^{2}+\sum_{n=1}^{N}x_{n}^{2}}$$
+$$\mathbb{E}[w_{1}|D,\sigma^{2}]=\sigma^{2}_{post}(-\frac{1}{\sigma^{2}}\sum_{n=1}^{N}x_{n}(w_{0}-y))$$
+
+可以看出样本的积累对于后验方差的缩减效果。
+
+\subsection{线性回归的生成模型}
+为了方便起见，我们仅考虑已经中心化的数据集（暂不改变符号），此时：
+$$w_{0}=0$$
+$$\mu_{x}=\mu_{y}=0$$
+
+根据协方差的定义：
+$$\Sigma_{XX}=X^{T}X$$
+$$\Sigma_{YX}=Y^{T}X$$
+
+利用4.3.1的结论：
+$$p(Y|X=x)=N(Y|\mu_{Y|X},\Sigma_{Y|X})$$
+
+其中：
+$$\mu_{Y|X}=\mu_{Y}+\Sigma_{YX}\Sigma_{XX}^{-1}(X-\mu_{X})=Y^{T}X(X^{T}X)^{-1}X=\textbf{w}^{T}X$$
+
+一般而言，生成模型和判别模型的区别在于前者的参数数量更多、更复杂，但是有独立生成原始数据的能力。
+
+\subsection{g-先验时的贝叶斯线性回归}
+首先回顾一下线性回归中Ridge回归模型的推理，似然函数为：
+$$p(D|\textbf{w},\sigma^{2})=\prod_{n=1}^{N}N(y_{n}|\textbf{w}^{T}\textbf{x}_{n},\sigma^{2})$$
+
+先验分布取正态-逆伽马分布：
+$$p(\textbf{w},\sigma^{2})=NIG(\textbf{w},\sigma^{2}|\textbf{w}_{0},\textbf{V}_{0},a_{0},b_{0})=N(\textbf{w}|\textbf{w}_{0},\sigma^{2}\textbf{V}_{0})IG(\sigma^{2}|a_{0},b_{0})$$
+$$=\frac{1}{(2\pi)^{\frac{D}{2}}}\frac{1}{|\sigma^{2}\textbf{V}_{0}|^{\frac{1}{2}}}\exp\left\{ -\frac{1}{2}(\textbf{w}-\textbf{w}_{0})^{T}(\sigma^{2}\textbf{V}_{0})^{-1}(\textbf{w}-\textbf{w}_{0}) \right\} \cdot$$
+$$\frac{b_{0}^{a_{0}}}{\Gamma(a_{0})}(\sigma^{2})^{-(a_{0}+1)}\exp\left\{ -\frac{b_{0}}{\sigma^{2}} \right\}$$
+$$=\frac{b_{0}^{a_{0}}}{(2\pi)^{\frac{D}{2}}|\textbf{V}_{0}|^{\frac{1}{2}}\Gamma(a_{0})}(\sigma^{2})^{-(a_{0}+\frac{D}{2}+1)}\cdot\exp\left\{ -\frac{(\textbf{w}-\textbf{w}_{0})^{T}\textbf{V}_{0}^{-1}(\textbf{w}-\textbf{w}_{0})+2b_{0}}{2\sigma^{2}} \right\}$$
+
+后验分布形式：
+$$p(\textbf{w},\sigma^{2}|D) \propto p(\textbf{w},\sigma^{2})p(D|\textbf{w},\sigma^{2})$$
+$$\propto \frac{b_{0}^{a_{0}}}{(2\pi)^{\frac{D}{2}}|\textbf{V}_{0}|^{\frac{1}{2}}\Gamma(a_{0})}(\sigma^{2})^{-(a_{0}+\frac{D}{2}+1)}\cdot\exp\left\{ -\frac{(\textbf{w}-\textbf{w}_{0})^{T}\textbf{V}_{0}^{-1}(\textbf{w}-\textbf{w}_{0})+2b_{0}}{2\sigma^{2}} \right\} \cdot$$
+$$(\sigma^{2})^{-\frac{N}{2}}\cdot \exp\left\{ -\frac{\sum_{n=1}^{N}(y_{n}-\textbf{w}^{T}\textbf{x}_{n})^{2}}{2\sigma^{2}}  \right\}$$
+
+比较$\sigma^{2}$的系数得到：
+$$a_{N}=a_{0}+\frac{N}{2}$$
+
+比较$\textbf{w}^{T}\textbf{w}$的系数得到：
+$$\textbf{V}_{N}^{-1}=\textbf{V}_{0}^{-1}+\sum_{n=1}^{N}\textbf{x}_{n}\textbf{x}_{n}^{T}=\textbf{V}_{0}^{-1}+\textbf{X}^{T}\textbf{X}$$
+
+比较$\textbf{w}$的系数得到：
+$$\textbf{V}_{N}^{-1}\textbf{w}_{N}=\textbf{V}_{0}^{-1}\textbf{w}_{0}+\sum_{n=1}^{N}y_{n}\textbf{x}_{n}$$
+
+所以：
+$$\textbf{w}_{N}=\textbf{V}_{N}(\textbf{V}_{0}^{-1}\textbf{w}_{0}+\textbf{X}^{T}\textbf{y})$$
+
+最后对齐幂函数里的常数项（和$\textbf{w}$无关）得到：
+$$b_{N}=b_{0}+\frac{1}{2}(\textbf{w}_{0}^{T}\textbf{V}_{0}^{-1}\textbf{w}_{0}+\textbf{y}^{T}\textbf{y}-\textbf{w}_{N}^{T}\textbf{V}_{N}^{-1}\textbf{w}_{N})$$
+
+以上得到了7.70到7.73式，最后可得7.69的重要结论：
+$$p(\textbf{w},\sigma^{2}|D)=NIG(\textbf{w},\sigma^{2}|\textbf{w}_{N},\textbf{V}_{N},a_{N},b_{N})$$
+
+本题中的所有结论只需按题干代入参数的先验值即可得到。
+
+\newpage
+\section{逻辑回归}
+\subsection{}
+Practice by yourself.
+
+\subsection{}
+Practice by yourself.
+
+\subsection{逻辑回归损失函数的梯度与海森矩阵}
+$$\frac{\partial}{\partial a} \sigma(a) = \frac{\exp(-a)}{(1+\exp(-a))^{2}} = \frac{1}{1+e^{-a}}\frac{e^{-a}}{1+e^{-a}}=\sigma(a)(1-\sigma(a))$$
+
+$$g(\textbf{w})=\frac{\partial}{\partial \textbf{w}}NLL(\textbf{w}) =\sum_{n=1}^{N}\frac{\partial}{\partial \textbf{w}} [y_{i}\log \mu_{i} + (1-y_{i})\log (1-\mu_{i})] $$
+$$=\sum_{n=1}^{N}y_{i}\frac{1}{\sigma}\sigma(1-\sigma)-\textbf{x}_{i}+(1-y_{i})\frac{-1}{1-\sigma}\sigma(1-\sigma)-\textbf{x}_{i}$$
+$$=\sum_{n=1}^{N}(\sigma(\textbf{w}^{T}\textbf{x}_{i})-y_{i})\textbf{x}_{i}$$
+
+对于一个任意的（形状正确的）非零向量$\textbf{u}$：
+$$\textbf{u}^{T}\textbf{X}^{T}\textbf{S}\textbf{X}\textbf{u}=(\textbf{X}\textbf{u})^{T}\textbf{S}(\textbf{X}\textbf{u})$$
+
+因为$\textbf{S}$为正定矩阵，所以对于任何形状正确的非零$\textbf{v}$：
+$$\textbf{v}^{T}\textbf{S}\textbf{v} > 0$$
+
+因为$\textbf{X}$满秩，所以$\textbf{X}\textbf{u}$非零，所以：
+$$(\textbf{X}\textbf{u})^{T}\textbf{S}(\textbf{X}\textbf{u}) = \textbf{u}^{T}(\textbf{X}^{T}\textbf{S}\textbf{X})\textbf{u} > 0$$
+
+所以$\textbf{X}^{T}\textbf{S}\textbf{X}$为正定矩阵。
+
+\subsection{多元逻辑回归损失函数的梯度与海森矩阵}
+通过每次仅考虑一个独立的分量，我们可以排除张量积带来的形式复杂性，考虑对个特定的类型对应的向量$\textbf{w}^{*}$：
+$$\frac{\partial}{\partial \textbf{w}^{*}}NLL(\textbf{W}) = -\sum_{n=1}^{N}\frac{\partial}{\partial \textbf{w}^{*}} [y_{n*}\textbf{w}^{*T}\textbf{x}_{n}-\log(\sum_{c=1}^{C}\exp(\textbf{w}_{c}^{T}\textbf{x}_{n}))]$$
+$$\sum_{n=1}^{N}-y_{n*}\textbf{x}_{n}+\frac{\exp(\textbf{w}^{*T}\textbf{x}_{n})}{\sum_{c=1}^{C}\exp(\textbf{w}_{c}^{T}\textbf{x}_{n}})\textbf{x}_{n}=\sum_{n=1}^{N}(\mu_{n*}-y_{n*})\textbf{x}_{n}$$
+
+将对于所有类别的解合并到一个矩阵并对$n$求和给出8.38。
+
+求解海森矩阵的形式时，我们考虑依次对于$\textbf{w}_{1}$和$\textbf{w}_{2}$两个分量求梯度：
+$$\textbf{H}_{1,2}=\nabla_{\textbf{w}_{2}}\nabla_{\textbf{w}_{1}}NLL(\textbf{W})=\frac{\partial}{\partial \textbf{w}_{2}} \sum_{n=1}^{N}(\mu_{n1}-y_{n1})\textbf{x}_{n}  $$
+
+当$\textbf{w}_{1}$与$\textbf{w}_{2}$实际上是同一个类型时：
+$$\frac{\partial}{\partial \textbf{w}_{1}} \sum_{n=1}^{N}(\mu_{n1}-y_{n1})\textbf{x}_{n}^{T}=\sum_{n=1}^{N}\frac{\partial}{\partial \textbf{w}_{1}}\mu_{n1}\textbf{x}_{n}^{T}$$
+$$\sum_{n=1}^{N}\frac{\exp(\textbf{w}_{1}^{T}\textbf{x}_{n})(\sum \exp)\textbf{x}_{n}-\exp(\textbf{w}_{1}^{T}\textbf{x}_{n})^{2}\textbf{x}_{n}}{(\sum \exp)^{2}}\textbf{x}_{n}^{T}$$
+$$=\sum_{n=1}^{N}\mu_{n1}(1-\mu_{n1})\textbf{x}_{n}\textbf{x}_{n}^{T}$$
+
+当$\textbf{w}_{1}$与$\textbf{w}_{2}$不表示同一个类型时：
+$$\frac{\partial}{\partial \textbf{w}_{2}} \sum_{n=1}^{N}\mu_{n1}\textbf{x}_{n}^{T}=\sum_{n=1}^{N}\frac{-\exp(\textbf{w}_{2}^{T}\textbf{x}_{n})\exp(\textbf{w}_{1}^{T}\textbf{x}_{n})\textbf{x}_{n}}{(\sum\exp)^{2}}\textbf{x}_{n}^{T}$$
+$$=\sum_{n=1}^{N}-\mu_{n1}\mu_{n2}\textbf{x}_{n}\textbf{x}_{n}^{T}$$
+
+得到8.44。
+
+$\sum_{c}y_{nc}=1$的条件在8.34到8.35的过程中使用。
+
+\subsection{}
+一个值得注意的核心思想是：加入正则项一方面等价于进行一次最大后验估计，即加入一个先验分布；一方面等价于引入一个拉格朗日乘子，进行一个额外的约束。本题中引入的先验分布为一个协方差为单位矩阵倍数的正态分布，等价的约束为$w_{cj}=0$。
+
+在取到最优解时式8.47中的梯度为0，此时我们近似认为$\hat{\mu}_{cj}=y_{cj}$，则$g(\textbf{W})=0$，额外的正则项条件即$\lambda\sum_{c=1}^{C}\textbf{w}_{c}=0$，它等价于一组由$D$个线性方程组表达的$D$个约束，约束形式为：对于$j=1...D$，$\sum_{c=1}^{C}\hat{w}_{cj}=0$。
+
+\subsection{l2正则项的基本性质}
+$J(\textbf{w})$的第一项之海森矩阵为正定矩阵（8.7），第二项的海森矩阵仍为正定矩阵（$\lambda > 0$），所以这个函数的海森矩阵正定，故其有全局最优解。
+
+考察后验分布的形式：
+$$p(\textbf{w}|D)\propto p(D|\textbf{w})p(\textbf{w})$$
+$$p(\textbf{w})=N(\textbf{w}|\textbf{0},\sigma^{-2}\textbf{I})$$
+$$NLL(\textbf{w})=-\log p(\textbf{w}|D) = -\log p(D|\textbf{w}) + \frac{1}{2\sigma^{2}}\textbf{w}^{T}\textbf{w}+c$$
+
+所以：
+$$\lambda=\frac{1}{2\sigma^{2}}$$
+
+
+全剧最优解中零的数量和$\lambda$的取值有关，$\lambda$值负相关于$\textbf{w}$的先验不确定性，其不确定性越小，则$\textbf{w}$越趋向于零向量，所以最后取得的最终解中零也会越多。
+
+如果$\lambda=0$，即先验不确定性无穷大，后验估计变为最大似然估计。因为此时对于$\textbf{w}$没有限制，所以有可能有$\textbf{w}$的分量趋近于无穷。
+
+当$\lambda$增大时，意味着先验的不确定性减少，所以整个模型的过拟合性质被减弱，一般而言这会导致训练集上的准确率下降。
+
+同时，过拟合性质的减弱一般而言能带来在测试集上的准确率上升，不过这并不一定发生。
+
+\subsection{}
+Practice by yourself.
+
+\newpage
+\section{泛型线性模型与幂分布族}
+\subsection{一元高斯分布的共轭先验分布属于幂分布族}
+一维正态分布的形式为：
+$$N(x|\mu,\sigma^{2})=\frac{1}{\sqrt{2\pi \sigma^{2}}}\exp\left\{-\frac{1}{2\sigma^{2}}(x-\mu)^{2} \right\}$$
+
+整理为：
+$$p(x|\mu,\sigma^{2})=\exp\left\{-\frac{1}{2\sigma^{2}}x^{2} + \frac{1}{\sigma^{2}}x -\left\{\frac{\mu^{2}}{2\sigma^{2}}+\frac{\ln(2\pi\sigma^{2})}{2}\right\}  \right\}$$
+
+记$\theta = (-\frac{\lambda}{2},\lambda\mu)^{T}$，$A(\theta) =\frac{\lambda\mu^{2}}{2}+\frac{\ln(2\pi)}{2}-\frac{\ln \lambda}{2}$，$\phi(x)=(x^{2},x)^{T}$考虑对于数据集$D$的似然函数：
+$$\log p(D|\theta) = \exp\left\{ \theta^{T}(\sum_{n=1}^{N}\phi(x_{n})) -N\cdot A(\theta) \right\}$$
+
+根据先验分布的意义，我们设置一个观测场景来定义一个先验分布，依据幂分布族的形式，我们只需预设充分统计量，下面设先验统计了$M$次，其中平方项的均值和一次项的均值分别为$v_{2}$和$v_{1}$，则先验分布的形式为：
+$$p(\theta|M,v_{1},v_{2})=\exp\left\{ \theta_{1}\cdot Mv_{1} + \theta_{2}\cdot Mv_{2} - M\cdot A(\theta) \right\}$$
+$$=\exp\left\{-\frac{\lambda}{2}Mv_{1}+\lambda\mu Mv_{2} - \frac{M}{2}\lambda\mu^{2}-\frac{M}{2}\ln 2\pi + \frac{M}{2}\ln \lambda  \right\}$$
+
+注意到这个先验分布的参数数量为三，下面证明它等价于$p(\mu,\lambda)=N(\mu|\gamma,\frac{1}{\lambda(2\alpha-1)})Ga(\lambda|\alpha,\beta)$，将这一分布展开到幂函数内并略去和$\mu,\lambda$无关的变量：
+$$p(\mu,\lambda)=\exp\left\{ (\alpha-1)\ln \lambda - \beta\lambda -\frac{\lambda(2\alpha-1)}{2}\mu^{2}-\frac{\lambda(2\alpha-1)}{2}\gamma^{2}\right\}$$
+$$\cdot\exp\left\{\lambda(2\alpha-1)\mu\gamma+\frac{1}{2}\ln \lambda \right\}$$
+
+分别对齐$\lambda \mu^{2},\lambda \mu,\lambda,\ln \lambda$这几项的系数，得到下列等式：
+$$-\frac{(2\alpha-1)}{2} = -\frac{M}{2}$$
+$$\gamma(2\alpha-1)=Mv_{2}$$
+$$\frac{(2\alpha-1)}{2}\gamma^{2}-\beta=-\frac{1}{2}Mv_{1}$$
+$$(\alpha-1)+\frac{1}{2}=\frac{M}{2}$$
+
+第一个与第四个等价，联立解得：
+$$\alpha = \frac{M+1}{2}$$
+$$\beta = \frac{M}{2}(v_{2}^{2}+v_{1})$$
+$$\gamma = v_{2}$$
+
+可见进行参数变换后，这两个分布等价。
+
+\subsection{多元高斯分布属于幂分布族}
+MVN的充分统计量为$s_{ij}=x_{i}x_{j}$和$s_{i}=x_{i}$，其中$1 \leq i,j \leq D$，相应的系数可从4.87中直接得到。
+
+\newpage
+\section{有向图模型}
+这章写得太垃圾了，不想做习题解答。
+
+\newpage
+\section{混合模型与期望最大算法}
+\subsection{学生分布作为混合高斯分布}
+Student-t分布的一维形式为：
+$$St(x|\mu,\sigma^{2},v)=\frac{\Gamma(\frac{v}{2}+\frac{1}{2})}{\Gamma(\frac{v}{2})}(\frac{1}{\pi v \sigma^{2}})^{\frac{1}{2}}(1+\frac{(x-\mu)^{2}}{v\sigma^{2}})^{-\frac{v+1}{2}}$$
+
+考察11.61的右侧：
+$$\int N(x|\mu,\frac{\sigma^{2}}{z})Ga(z|\frac{v}{2},\frac{v}{2})dz$$
+$$=\int \frac{\sqrt{z}}{\sqrt{2\pi\sigma^{2}}}\exp\left\{ -\frac{z}{2\sigma^{2}}(x-\mu)^{2} \right\}\frac{(\frac{v}{2})^{\frac{v}{2}}}{\Gamma(\frac{v}{2})}z^{\frac{v}{2}-1}\exp\left\{ -\frac{v}{2}z \right\}dz$$
+$$=\frac{1}{\sqrt{2\pi \sigma^{2}}}\frac{(\frac{v}{2})^{\frac{v}{2}}}{\Gamma(\frac{v}{2})}\int z^{\frac{v-1}{2}}\exp\left\{ -(\frac{v}{2}+\frac{(x-\mu)^{2}}{2\sigma^{2}})z \right\} dz$$
+
+此时积分内的函数是伽马分布$Ga(z|\frac{v+1}{2},\frac{(x-\mu)^{2}}{2\sigma^{2}}+\frac{v}{2})$中和$z$相关的项，所以积分的结果是这一分布的归一化系数的倒数。
+$$\int z^{\frac{v-1}{2}}\exp\left\{ -(\frac{v}{2}+\frac{(x-\mu)^{2}}{\sigma^{2}})z \right\} dz = \Gamma(\frac{v+1}{2})(\frac{(x-\mu)^{2}}{2\sigma^{2}}+\frac{v}{2})^{-\frac{v+1}{2}}$$
+
+代入可证得两侧相等。
+
+\subsection{混合高斯分布的EM算法}
+混合高斯模型的最大似然估计为最优化如下函数：
+$$Q(\theta,\theta^{old})=\mathbb{E}p(z|D,\theta^{old})[\sum_{n=1}^{N}\log (\textbf{x}_{n},\textbf{z}_{n}|\theta)]$$
+$$=\sum_{n=1}^{N}\mathbb{E}[\log \prod_{k=1}^{K}(\pi_{k}p(\textbf{x}_{n}|z_{k},\theta))^{z_{nk}}]$$
+$$=\sum_{n=1}^{N}\sum_{k=1}^{K}r_{nk}\log (\pi_{k}p(\textbf{x}_{n}|z_{k},\theta))$$
+
+其中：
+$$r_{nk}=p(z_{nk}=1|\textbf{x}_{n},\theta^{old})$$
+
+对于激发概率$p(\textbf{x}|z,\theta)$为高斯分布的情况，首先考虑$Q(\theta,\theta^{old})$中与$\mu_{k}$有关的项：
+$$\sum_{n=1}^{N}r_{nk} \log p(\textbf{x}_{n}|z_{k},\theta) = \sum_{n=1}^{N} r_{nk} (-\frac{1}{2})(\textbf{x}_{n}-\mu_{k})^{T}\Sigma^{-1}(\textbf{x}_{n}-\mu_{k}) + C$$
+
+对其求导数并置零，得到平衡条件为：
+$$\sum_{n=1}^{N}r_{nk}(\mu_{k}-\textbf{x}_{n})=0$$
+
+解得11.31：
+$$\mu_{k} =\frac{\sum_{n=1}^{N}r_{nk}\textbf{x}_{n}}{\sum_{n=1}^{N}r_{nk}}$$
+
+考虑$Q(\theta,\theta^{old})$中和$\Sigma_{k}$有关的项：
+$$\sum_{n=1}^{N}r_{nk}\log p(\textbf{x}_{n}|z_{k},\theta) = \sum_{n=1}^{N}r_{nk} (-\frac{1}{2})(\log |\Sigma_{k}|+(\textbf{x}_{n}-\mu_{k})^{T}\Sigma^{-1}(\textbf{x}_{n}-\mu_{k})) + C$$
+
+使用和4.1.3.1相同的手段：
+$$L(\Sigma^{-1}=\Lambda)=(\sum_{n=1}^{N}r_{nk})\log |\Lambda|-Tr\left\{ (\sum_{n=1}^{N}r_{nk}(\textbf{x}_{n}-\mu_{k})(\textbf{x}_{n}-\mu_{k})^{T}) \Lambda \right\}$$
+
+它的平衡条件为：
+$$(\sum_{n=1}^{N}r_{nk})\Lambda^{-T}=\sum_{n=1}^{N}r_{nk}(\textbf{x}_{n}-\mu_{k})(\textbf{x}_{n}-\mu_{k})^{T}$$
+
+得到11.32：
+$$\Sigma_{k} = \frac{\sum_{n=1}^{N}r_{nk}(\textbf{x}_{n}-\mu_{k})(\textbf{x}_{n}-\mu_{k})^{T}}{\sum_{n=1}^{N}r_{nk}}$$
+
+11.28由$Q(\theta,\theta^{old})$中的相关项加上附加的约束项$\lambda(1-\sum_{k}\pi_{k})$后求导置零得到。
+
+\subsection{混合伯努利分布的EM算法}
+混合伯努利分布的最大似然估计中，考虑（其中$D=2$是可选元素的数量）：
+$$\frac{\partial}{\partial \mu_{kj}}\sum_{n=1}^{N}\sum_{k=1}^{K}r_{nk}\log p(\textbf{x}_{n}|\theta,k)=\sum_{n=1}^{N}r_{nk}\frac{\partial}{\partial \mu_{kj}}(\sum_{i}^{D}x_{ni}\log \mu_{ki})$$
+$$=\sum_{n=1}^{N}r_{nk}x_{nj}\frac{1}{\mu_{kj}}$$
+
+引入拉格朗日乘子来约束$\sum_{j}\mu_{kj}=1$，得到此时的导数为零条件：
+$$\mu_{kj}=\frac{\sum_{n=1}^{N}r_{nk}x_{nj}}{\lambda}$$
+
+对于所有的$j$求和：
+$$1=\sum_{j=1}^{D}\mu_{kj} = \frac{1}{\lambda}\sum_{j=1}^{D}\sum_{n=1}^{N}r_{nk}x_{nj}=\frac{1}{\lambda}\sum_{n=1}^{N}r_{nk}\sum_{j=1}^{D}x_{nj}=\frac{\sum_{n=1}^{N}r_{nk}}{\lambda}$$
+
+得到：
+$$\lambda = \sum_{n=1}^{N}r_{nk}$$
+
+代入得到11.116。
+
+引入先验分布：
+$$p(\mu_{k0})\propto \mu_{k0}^{\alpha-1}\mu_{k1}^{\beta-1}$$
+
+此时导数为零条件变化为：
+$$\mu_{k0}=\frac{\sum_{n=1}^{N}r_{nk}x_{n0}+\alpha-1}{\lambda}$$
+$$\mu_{k1}=\frac{\sum_{n=1}^{N}r_{nk}x_{n1}+\beta-1}{\lambda}$$
+
+而：
+$$1=\mu_{k0}+\mu_{k1}=\frac{1}{\lambda}(\sum_{n=1}^{N}r_{nk}(x_{n0}+x_{n1})+\alpha+\beta-2)$$
+$$\lambda = \sum_{n=1}^{N}r_{nk}+\alpha+\beta-2$$
+
+代入得到11.117。
+
+\subsection{混合学生分布的EM算法}
+学生分布模型中，完整数据项的似然对数为：
+$$l_{c}(\textbf{x},z)=\log(N(\textbf{x}|\mu,\frac{\Sigma}{z})Ga(z|\frac{\lambda}{2},\frac{\lambda}{2}))$$
+$$=-\frac{D}{2}\log(2\pi)-\frac{1}{2}\log|\Sigma|+\frac{D}{2}\log(z)-\frac{z}{2}(\textbf{x}-\mu)^{T}\Sigma^{-1}(\textbf{x}-\mu)+$$
+$$\frac{v}{2}\log (\frac{v}{2}) -\log(\Gamma(\frac{v}{2}))+(\frac{v}{2}-1)\log (z) - \frac{v}{2}z$$
+
+和式中关于$v$的项之和为：
+$$l_{v}(\textbf{x},z)=\frac{v}{2}\log(\frac{v}{2})-\log(\Gamma(\frac{v}{2}))+\frac{v}{2}(\log(z)-z)$$
+
+在全数据集上的似然为：
+$$L_{v}=\frac{vN}{2}\log(\frac{v}{2})-N\log(\Gamma(\frac{v}{2}))+\frac{v}{2}\sum_{n=1}^{N}(\log(z_{n})-z_{n})$$
+
+求导数并置零得到平衡条件，也即$v$的M-step最大似然估计，通过数值求解：
+$$\frac{\nabla\Gamma(\frac{v}{2})}{\Gamma(\frac{v}{2})}-1-\log(\frac{v}{2})=\frac{\sum_{n=1}^{N}(\log(z_{n})-z_{n})}{N}$$
+
+对于$\mu$和$\Sigma$而言：
+$$l_{\mu,\Sigma}(\textbf{x},z)=-\frac{1}{2}\log|\Sigma|-\frac{z}{2}(\textbf{x}-\mu)^{T}\Sigma^{-1}(\textbf{x}-\mu)$$
+$$L_{\mu,\Sigma}=\frac{N}{2}\log|\Sigma|-\frac{1}{2}\sum_{n=1}^{N}z_{n}(\textbf{x}_{n}-\mu)^{T}\Sigma^{-1}(\textbf{x}_{n}-\mu)$$
+
+所以对于$\mu$和$\Sigma$的最大似然估计和在多元正正态分布中类似推导即可。
+
+\subsection{混合高斯分布的梯度下降算法}
+根据题干：
+$$p(\textbf{x}|\theta)=\sum_{k}\pi_{k}N(\textbf{x}|\mu_{k},\Sigma_{k})$$
+$$l(\theta)=\sum_{n=1}^{N}\log p(\textbf{x}_{n}|\theta)$$
+
+直接对$\mu_{k}$求偏导数：
+$$\frac{\partial}{\partial \mu_{k}}l(\theta) = \sum_{n=1}^{N}\frac{\pi_{k}N(\textbf{x}_{n}|\mu_{k},\Sigma_{k})\nabla_{\mu_{k}}\left\{-\frac{1}{2}(\textbf{x}_{n}-\mu_{k})^{T}\Sigma_{k}^{-1}(\textbf{x}_{n}-\mu_{k})  \right\}}{\sum_{k'=1}^{K}\pi_{k'}N(\textbf{x}_{n}|\mu_{k'},\Sigma_{k'})}$$
+$$=\sum_{n=1}^{N}r_{nk}\Sigma_{k}^{-1}(\textbf{x}_{n}-\mu_{k})$$
+
+对$\pi_{k}$求导数：
+$$\frac{\partial}{\partial \pi_{k}}l(\theta)=\sum_{n=1}^{N}\frac{N(\textbf{x}_{n}|\mu_{k},\Sigma^{k})}{\sum_{k'=1}^{K}\pi_{k'}N(\textbf{x}_{n}|\mu_{k'},\Sigma_{k'})}=\frac{1}{\pi_{k}}\sum_{n=1}^{N}r_{nk}$$
+
+我们使用拉格朗日乘子法而不是题干中的softmax归一化方法，得到平衡条件：
+$$\pi_{k}=\frac{\sum_{n=1}^{N}r_{nk}}{\lambda}$$
+
+对$k$求和并归一化，得到：
+$$\pi_{k}=\frac{\sum_{n=1}^{N}r_{nk}}{N}$$
+
+对于$\Sigma_{k}$而言：
+$$\frac{\partial}{\partial \Sigma_{k}}l(\theta)=\sum_{n=1}^{N}\frac{\pi_{k}\nabla_{\Sigma_{k}}N(\textbf{x}_{n}|\mu_{k},\Sigma_{k})}{\sum_{k'=1}^{K}pi_{k'}N(\textbf{x}_{n}|\mu_{k'},\Sigma_{k'})}$$
+
+其中：
+$$\nabla_{\Sigma_{k}}N(\textbf{x}|\mu_{k},\Sigma_{k})=\frac{1}{(2\pi)^{\frac{D}{2}}}\frac{1}{|\Sigma_{k}|^{\frac{1}{2}}}\exp\left\{ -\frac{1}{2}(\textbf{x}-\mu_{k})^{T}\Sigma_{k}^{-1}(\textbf{x}-\mu_{k}) \right\}\nabla_{\Sigma_{k}}\cdot$$
+$$\left\{ \nabla_{\Sigma_{k}}(-\frac{1}{2}(\textbf{x}-\mu_{k})\Sigma_{k}^{-1}(\textbf{x}-\mu_{k}))-\Sigma_{k}^{-1}\nabla_{\Sigma_{k}}|\Sigma_{k}| \right\}$$
+$$=N(\textbf{x}|\mu_{k},\Sigma_{k})\nabla(\log N(\textbf{x}|\mu_{k},\Sigma_{k}))$$
+
+之后利用正态对数似然对协方差的求解公式即可，此时解出：
+$$\Sigma_{k}=\frac{\sum_{n=1}^{N}r_{nk}(\textbf{x}_{n}-\mu_{k})(\textbf{x}_{n}-\mu_{k})^{T}}{\sum_{n=1}^{N}r_{nk}}$$
+
+\subsection{混合异方差高斯分布的EM算法}
+注意到$J$和$K$的选取是相互独立的，直接利用贝叶斯公式（略去条件中的参数$\theta$）：
+$$p(J_{n}=j,K_{n}=k|x_{n})=\frac{p(J_{n}=j,K_{n}=k,x_{n})}{p(x_{n})}=\frac{p(J_{n}=j)p(K_{n}=k)p(x_{n}|J_{n}=j,K_{n}=k)}{\sum_{J_{n},K_{n}}p(J_{n},K_{n},x_{n})}$$
+$$=\frac{p_{j}q_{k}N(x_{n}|\mu_{j},\sigma^{2}_{k})}{\sum_{J_{n}=1}^{m}\sum_{K_{n}=1}^{l}p_{J_{n}}q_{K_{n}}N(x_{n}|\mu_{J_{n}},\sigma^{2}_{K_{n}})}$$
+
+也可以当做底层的发生分布为$ml$个独立的分量，则上式的意义更加明显。
+
+下面求出辅助函数$Q(\theta^{new},\theta^{old})$的形式：
+$$Q(\theta^{new},\theta^{old})=\mathbb{E}_{\theta^{old}}\sum_{n=1}^{N}\log p(x_{n},J_{n},K_{n}|\theta^{new})$$
+$$=\sum_{n=1}^{N}\mathbb{E}[\log(\prod_{j=1}^{m}\prod_{k=1}^{l} p(x_{n},J_{n},K_{n}|\theta^{new})^{\mathbb{I}(J_{n}=j,K_{n}=k)} )]$$
+$$=\sum_{n=1}^{N}\sum_{j=1}^{m}\sum_{k=1}^{l}\mathbb{E}(\mathbb{I}(J_{n}=j,K_{n}=k))(\log p_{j} + \log q_{k} + \log N(x_{n}|\mu_{j},\sigma^{2}_{k}))$$
+$$=\sum_{n,j,k}r_{njk}\log p_{j} + \sum_{n,j,k}r_{njk}\log q_{k} + \sum_{njk}r_{njk}\log N(x_{n}|\mu_{j},\sigma^{2}_{k})$$
+
+我们理论上要优化四种参数$p,q,\mu,\sigma^{2}$，观察在$Q$中的形式可发现$p$和$q$可以独立地优化而不考虑和其他变量的协变关系，现考虑在$\sigma^{2}$固定的情况下优化$\mu$：
+$$\frac{\partial}{\partial \mu_{j}}\sum_{n,j',k}r_{nj'k}N(x_{n}|\mu_{j},\sigma^{2}_{k})=\sum_{n,k}r_{njk}\nabla_{\mu_{k}}N(x_{n}|\mu_{j},\sigma^{2}_{k})$$
+$$=\sum_{n,k}r_{njk}N(x_{n}|\mu_{j},\sigma^{2}_{k})\frac{x_{n}-\mu_{j}}{\sigma^{2}_{k}}$$
+
+解得：
+$$\mu_{j}=\frac{\sum_{n,k}r_{njk}N(x_{n}|\mu_{j},\sigma^{2}_{k})\frac{x_{n}}{\sigma^{2}_{k}}} { \sum_{n,k}r_{njk}N(x_{n}|\mu_{j},\sigma^{2}_{k})\frac{1}{\sigma^{2}_{k}}}$$
+
+\subsection{}
+Practise by yourself.
+
+\subsection{混合高斯分布的矩}
+混合正态分布的期望：
+$$\mathbb{E}(\textbf{x})=\int\textbf{x}\sum_{k}\pi_{k}N(\textbf{x}|\mu_{k},\Sigma_{k})d\textbf{x}=\sum_{k}\pi_{k}(\int\textbf{x}N(\textbf{x}|\mu_{k},\Sigma_{k})d\textbf{x})$$
+$$=\sum_{k}\pi_{k}\mu_{k}$$
+
+利用$cov(\textbf{x})=\mathbb{E}(\textbf{x}\textbf{x}^{T})-\mathbb{E}(\textbf{x})\mathbb{E}(\textbf{x})^{T}$，我们求：
+$$\mathbb{E}(\textbf{x}\textbf{x}^{T})=\int \textbf{x}\textbf{x}^{T}\sum_{k}\pi_{k}N(\textbf{x}|\mu_{k},\Sigma_{k})d\textbf{x}=\sum_{k}\pi_{k}\int \textbf{x}\textbf{x}^{T}N(\textbf{x}|\mu_{k},\Sigma_{k})d\textbf{x}$$
+
+其中：
+$$\int \textbf{x}\textbf{x}^{T}N(\textbf{x}|\mu_{k},\Sigma_{k})d\textbf{x}=\mathbb{E}_{N(\mu_{k},\Sigma_{k})}(\textbf{x}\textbf{x}^{T})=cov_{N(\mu_{k},\Sigma_{k})}(\textbf{x})+\mathbb{E}_{N(\mu_{k},\Sigma_{k})}(\textbf{x})\mathbb{E}_{N(\mu_{k},\Sigma_{k})}(\textbf{x})^{T}$$
+$$=\Sigma_{k}+\mu_{k}\mu_{k}^{T}$$
+
+所以：
+$$cov(\textbf{x})=\sum_{k}\pi_{k}(\Sigma_{k}+\mu_{k}\mu_{k}^{T})-\mathbb{E}(\textbf{x})\mathbb{E}(\textbf{x})^{T}$$
+
+\subsection{}
+Practise by yourself.
+
+\subsection{K-means的损失函数}
+对于$k$进行求和时的每一项，对内侧和外侧求和记号依次应用11.134：
+$$\sum_{i:z_{i}=k}\sum_{i':z_{i'}=k}(x_{i}-x_{i'})^{2}=\sum_{i:z_{i}=k}n_{k}s^{2}+n_{k}(\bar{x}_{k}-x_{i})^{2}$$
+$$=n_{k}^{2}s^{2}+n_{k}(n_{k}s^{2})=2n_{k}s_{k}$$
+
+而11.131中右式对应于$k$的求和结果：
+$$n_{k}\sum_{i:z_{i}=k}(x_{i}-\bar{x}_{k})^{2}=n_{k}(n_{k}s^{2}+n(\hat{x}_{n}-\hat{x}_{n}))$$
+
+故11.131成立。
+
+\subsection{混合高斯分布的全显似然属于幂分布族}
+首先，以热洞形式编码隐含元，即$z_{c}=\mathbb{I}$($x$由$c$对应的分布产生)。此时（为简洁起见略去条件中的$\theta$）：
+$$p(\textbf{z})=\prod_{c=1}^{C}\pi_{c}^{z_{c}}$$
+$$p(x|\textbf{z})=\prod_{c=1}^{C}(\frac{1}{\sqrt{2\pi \sigma_{c}^{2}}}\exp\left\{ -\frac{1}{2\sigma_{c}^{2}}(x-\mu_{c})^{2} \right\})^{z_{c}}$$
+
+写出联合分布的对数：
+$$\log p(x,\textbf{z})=\log \prod_{c=1}^{C}(\frac{\pi_{c}}{\sqrt{2\pi \sigma_{c}^{2}}}\exp\left\{ -\frac{1}{2\sigma_{c}^{2}}(x-\mu_{c})^{2} \right\})^{z_{c}}$$
+$$=\sum_{c=1}^{C}z_{c}(\log \pi_{c} -\frac{1}{2}\log 2\pi \sigma_{c}^{2} - \frac{1}{2\sigma_{c}^{2}}(x-\mu_{c})^{2})$$
+
+上式从形式上是一些内积的代数和，所以服从幂分布族的形式，故充分统计量为$\textbf{z}$，$\textbf{z}x$和$\textbf{z}x^{2}$的线性组合。
+
+\subsection{}
+利用11.4.5节得出的学生分布中关于$\mu$的全数据集上似然函数：
+$$L_{N}(\mu)=\frac{1}{2\sigma^{2}} \sum_{n=1}^{N}z_{n}(y_{n}-\textbf{w}^{T}\textbf{x}_{n})^{2}$$
+
+对其求偏导数并置零：
+$$\textbf{w}^{T}\sum_{n=1}^{N}z_{n}\textbf{x}_{n}\textbf{x}_{n}^{T}=\sum_{n=1}^{N}z_{n}y_{n}\textbf{x}_{n}^{T}$$
+
+解得：
+$$\textbf{w}^{T}=(\sum_{n=1}^{N}z_{n}y_{n}\textbf{x}_{n}^{T})(\sum_{n=1}^{N}z_{n}\textbf{x}_{n}\textbf{x}_{n}^{T})^{-1}$$
+
+
+\subsection{}
+对于每个分别的$j$，式5.90各自不同（这一步骤等价于E-step）：
+$$p(\bar{x}_{i}|\mu,t^{2},\sigma^{2})=N(\bar{x}_{j}|\mu,t^{2}+\sigma^{2}_{j})$$
+
+这一积分消去了隐元$\theta_{j}$，故此时的边缘似然对数为：
+$$\log \prod_{j=1}^{D}N(\bar{x}_{j}|\mu,t^{2}+\sigma^{2}_{j}) = (-\frac{1}{2})\sum_{j=1}^{D}\log 2\pi(t^{2}+\sigma_{j}^{2})+\frac{1}{t^{2}+\sigma_{j}^{2}}(\bar{x}_{j}-\mu)^{2}$$
+
+下面分别最优化（等价于M-step）：
+$$\mu=\frac{\sum_{j=1}^{D}\frac{\bar{x}_{j}}{t^{2}+\sigma_{j}^{2}}}{\sum_{j=1}^{D}\frac{1}{t^{2}+\sigma_{j}^{2}}}$$
+
+$t^{2}$满足：
+$$\sum_{j=1}^{D}\frac{(t^{2}+\sigma^{2})-(\bar{x}_{j}-\mu)^{2}}{(t^{2}+\sigma_{j}^{2})^{2}}$$
+
+\subsection{}
+Unsolved.
+
+\subsection{截断高斯分布的后验均值与方差}
+我们记$A=\frac{c_{i}-\mu_{i}}{\sigma}$，对于均值有：
+$$\mathbb{E}[z_{i}|z_{i} \geq c_{i}]=\mu_{i}+\sigma \mathbb{E}[\epsilon_{i}|\epsilon_{i} \geq A]$$
+
+而：
+$$\mathbb{E}[\epsilon_{i}|\epsilon_{i}=\frac{1}{p(\epsilon_{i} \geq A)}\int_{A}^{+\infty}\epsilon_{i}N(\epsilon_{i}|0,1)dx=\frac{\phi(A)}{1-\Phi(A)}=H(A)$$
+
+最后一步代入了11.141和11.139，向上代入得到：
+$$\mathbb{E}[z_{i}|z_{i} \geq c_{i}]=\mu_{i}+\sigma H(A)$$
+
+下面求平方的期望：
+$$\mathbb{E}[z_{i}^{2}|z_{i} \geq c_{i}]=\mu_{i}^{2} + 2\mu_{i}\sigma \mathbb{E}[\epsilon_{i}|\epsilon_{i} \geq A] + \sigma^{2}\mathbb{E}[\epsilon_{i}^{2}|\epsilon_{i} \geq A]$$
+
+为求$\mathbb{E}[\epsilon_{i}^{2}|\epsilon_{i} \geq A]$，我们延续题干中提示的思路：
+$$\frac{d}{dw}(wN(w|0,1))=N(w|0,1)-w^{2}N(w|0,1)$$
+
+得到：
+$$\int_{b}^{c}w^{2}N(w|0,1)dw=\Phi(c)-\Phi(b)-cN(c|0,1)+bN(b|0,1)$$
+$$\mathbb{E}[\epsilon_{i}^{2}|\epsilon_{i} \geq A]=\frac{1}{p(\epsilon_{i}\geq A)}\int_{A}^{+\infty}w^{2}N(w|0,1)dw=\frac{1-\Phi(A)+A\phi(A)}{1-\Phi(A)}$$
+
+再代入第一问的结论得到：
+$$\mathbb{E}[z_{i}^{2}|z_{i} \geq c_{i}]=\mu_{i}^{2}+2\mu_{i}\sigma H(A) + \sigma^{2}\frac{1-\Phi(A)+A\phi(A)}{1-\Phi(A)}$$
+$$=\mu_{i}^{2} + \sigma^{2} + H(A)(\sigma c_{i} + \sigma \mu_{i})$$
+
+\newpage
+\section{隐含元线性模型}
+\subsection{FA模型的M-step}
+此处完整重复FA（Fator-Analysis）的EM求解过程，首先我们有基本的（将$\textbf{X}$中心化消去变量$\mu$）：
+$$p(\textbf{z})=N(\textbf{z}|0,I)$$
+$$p(\textbf{x}|\textbf{z})=N(\textbf{x}|\textbf{W}\textbf{z},\Psi)$$
+
+以及：
+$$p(\textbf{z}|\textbf{x})=N(\textbf{z}|\textbf{m},\Sigma)$$
+$$\Sigma=(I+\textbf{W}^{T}\Psi^{-1}\textbf{W})^{-1}$$
+$$\textbf{m}=\Sigma\textbf{W}^{T}\Psi^{-1}\textbf{x}_{n}$$
+
+以$\textbf{z}_{n}$为$\textbf{x}_{n}$对应的隐含变量，则全数据集$\left\{ \textbf{x},\textbf{z} \right\}$的似然对数为：
+$$\log \prod_{n=1}^{N}p(\textbf{x}_{n},\textbf{z}_{n})=\sum_{n=1}^{N}\log p(\textbf{z}_{n})+\log p(\textbf{x}_{n}|\textbf{z}_{n})$$
+
+其中$\log p(\textbf{z})$是先验项，参数为$0$和$I$，所以可以直接略去，故：
+$$Q(\theta,\theta^{old})=\mathbb{E}_{\theta^{old}}[\sum_{n=1}^{N}\log p(\textbf{x}_{n}|\textbf{z}_{n},\theta)]$$
+$$=\mathbb{E}[\sum_{n=1}^{N} c-\frac{1}{2}\log |\Psi|-\frac{1}{2}(\textbf{x}_{n}-\textbf{W}\textbf{z}_{n})^{T}\Psi^{-1}(\textbf{x}_{n}-\textbf{W}\textbf{z}_{n})]$$
+$$=C -\frac{N}{2}\log |\Psi|-\frac{1}{2}\sum_{n=1}^{N}\mathbb{E}[(\textbf{x}_{n}-\textbf{W}\textbf{z}_{n})^{T}\Psi^{-1}(\textbf{x}_{n}-\textbf{W}\textbf{z}_{n})]$$
+$$=C-\frac{N}{2}\log |\Psi|-\frac{1}{2}\sum_{n=1}^{N}\textbf{x}_{n}^{T}\Psi^{-1}\textbf{x}_{n}-\frac{1}{2}\sum_{n=1}^{N}\mathbb{E}[\textbf{z}_{n}^{T}\textbf{W}^{T}\Psi^{-1}\textbf{W}\textbf{z}_{n}]+\sum_{n=1}^{N}\textbf{x}_{n}^{T}\Psi^{-1}\textbf{W}\mathbb{E}[\textbf{z}_{n}]$$
+$$=C-\frac{N}{2}\log |\Psi|-\frac{1}{2}\sum_{n=1}^{N}\textbf{x}_{n}\Psi^{-1}\textbf{x}_{n}-\frac{1}{2}\sum_{n=1}^{N}Tr\left\{ \textbf{W}^{T}\Psi^{-1}\textbf{W}\mathbb{E}[\textbf{z}_{n}\textbf{z}_{n}^{T}]\right\} +\sum_{n=1}^{N}\textbf{x}_{n}^{T}\Psi^{-1}\textbf{W}\mathbb{E}[\textbf{z}_{n}]$$
+
+
+根据$p(\textbf{z}|\textbf{x},\theta^{old})=N(\textbf{z}|\textbf{m},\Sigma)$，有：
+$$\mathbb{E}[\textbf{z}_{n}|\textbf{x}_{n}]=\Sigma\textbf{W}^{T}\Psi^{-1}\textbf{x}$$
+$$\mathbb{E}[\textbf{z}_{n}\textbf{z}_{n}^{T}|\textbf{x}_{n}]=cov(\textbf{z}_{n}|\textbf{x}_{n})+\mathbb{E}[\textbf{z}_{n}|\textbf{x}_{n}]\mathbb{E}[\textbf{z}_{n}|\textbf{x}_{n}]^{T}=\Sigma + (\Sigma\textbf{W}^{T}\Psi^{-1}\textbf{x})(\Sigma\textbf{W}^{T}\Psi^{-1}\textbf{x})^{T}$$
+
+以下在求期望时略去条件中的$\textbf{x}$和旧参数$\theta^{old}$。
+
+首先对$\textbf{W}$优化：
+$$\frac{\partial}{\partial \textbf{W}}Q=\sum_{n=1}^{N}\Psi^{-1}\textbf{x}_{n}\mathbb{E}[\textbf{z}_{n}]^{T}-\sum_{n=1}^{N}\Psi^{-1}\textbf{W}\mathbb{E}[\textbf{z}_{n}\textbf{z}_{n}^{T}]$$
+
+将其置为零得到：
+$$\textbf{W}=(\sum_{n=1}^{N}\textbf{x}_{n}\mathbb{E}[\textbf{z}_{n}]^{T})(\sum_{n=1}^{N}\mathbb{E}[\textbf{z}_{n}\textbf{z}_{n}^{T}])^{-1}$$
+
+对$\Psi^{-1}$优化：
+$$\frac{\partial}{\partial \Psi^{-1}}Q=\frac{N}{2}\Psi -\frac{1}{2}\sum_{n=1}^{N}\textbf{x}_{n}\textbf{x}_{n}^{T}-\frac{1}{2}\sum_{n=1}^{N}\textbf{W}\mathbb{E}[\textbf{z}_{n}\textbf{z}_{n}^{T}]\textbf{W}^{T}+\sum_{n=1}^{N}\textbf{W}\mathbb{E}[\textbf{z}_{n}]\textbf{x}_{n}$$
+
+代入上述$\textbf{W}$的表达式得到：
+$$\Psi=\frac{1}{N}(\sum_{n=1}^{N}\textbf{x}_{n}\textbf{x}_{n}^{T}-\textbf{W}\mathbb{E}[\textbf{z}_{n}]\textbf{x}_{n}^{T})$$
+
+维持$\Psi$为对角矩阵的假设，取：
+$$\Psi=\frac{1}{N}diag(\sum_{n=1}^{N}\textbf{x}_{n}\textbf{x}_{n}^{T}-\textbf{W}\mathbb{E}[\textbf{z}_{n}]\textbf{x}_{n}^{T})$$
+
+本题的解答来自论文“The EM Algorithm for Mixtures of Factor Analyzers, Zoubin Gharamani, Geoffrey E.Hinton, 1996”，文中也提供了混合FA模型的EM算法。
+
+\subsection{FA模型的最大后验估计}
+假设先验分布$p(\textbf{W})$和$p(\Psi)$，和上一题的算法相比，只需要在M-step中：
+$$\frac{\partial}{\partial \textbf{W}}(Q+\log p(\textbf{W}))=0$$
+$$\frac{\partial}{\partial \Psi}(Q+\log p(\Psi))=0$$
+
+获得解析即可。
+
+\subsection{}
+Need pictures for illustration here!
+
+\subsection{第二主成分的导出}
+对于：
+$$J(\textbf{v}_{2},\textbf{z}_{2})=\frac{1}{N}\sum_{n=1}^{N}(\textbf{x}_{n}-z_{n1}\textbf{v}_{1}-z_{n2}\textbf{v}_{2})^{T}(\textbf{x}_{n}-z_{n1}\textbf{v}_{1}-z_{n2}\textbf{v}_{2})$$
+
+考察对$\textbf{z}_{2}$一个分量的导数：
+$$\frac{\partial}{\partial z_{m2}}J = \frac{1}{N}(2z_{m2}\textbf{v}_{2}^{T}\textbf{v}_{2}-2\textbf{v}_{2}^{T}(\textbf{x}_{m}-z_{m1}\textbf{v}_{1}))=0$$
+
+利用假设$\textbf{v}_{2}^{T}\textbf{v}_{2}=1$和$\textbf{v}_{2}^{T}\textbf{v}_{1}=0$，得到：
+$$z_{m2}=\textbf{v}_{2}^{T}\textbf{x}_{m}$$
+
+利用$\textbf{C}$是对称矩阵的性质，以及$\textbf{v}_{1}$和$\textbf{v}_{2}$上的约束，我们首先对$\textbf{C}$进行奇异值分解：
+$$\textbf{C}=\textbf{O}^{T}\Lambda\textbf{O}$$
+
+其中：
+$$\Lambda = diag\left\{ \lambda_{1},\lambda_{2},... \right\}$$
+
+依次为$\textbf{C}$的特征值从大到小排列（均为非负）。
+
+$$\textbf{O}^{T}=\left\{ \textbf{u}_{1},\textbf{u}_{2},... \right\}$$
+
+依次为相对应的模为1的特征向量，它们两两正交$\textbf{u}_{i}^{T}\textbf{u}_{j}=\mathbb{I}(i=h)$，其中$\textbf{u}_{1}=\textbf{v}_{1}$。
+
+我们想要在$\textbf{v}_{2}^{T}\textbf{v}_{2}=1$以及$\textbf{v}_{2}^{T}\textbf{v}_{1}=0$的条件下最小化：
+$$(\textbf{O}\textbf{v}_{2})^{T}\Lambda(\textbf{O}\textbf{v}_{2})$$
+
+注意到$\textbf{O}\textbf{v}_{2}$的意义是$\textbf{v}_{2}$进行一次正交变换，所以其模仍然为1，而$(\textbf{O}\textbf{v}_{2})^{T}\Lambda(\textbf{O}\textbf{v}_{2})$度量的是该向量的各个分量的平方与$\Lambda$中特征值相乘以后的和，所以此时的最优解是将所有的模集中到对应最大特征值的分量上，这就意味着：
+$$\textbf{u}_{i}^{T}\textbf{v}_{2} = \mathbb{I}(i=2)$$
+
+所以：
+$$\textbf{v}_{2}=\textbf{u}_{2}$$
+
+通过矩阵微分引入拉格朗日乘子后的函数一样可得。
+
+\subsection{PCA的残差}
+$$||\textbf{x}_{n}-\sum_{j=1}^{K}z_{nj}\textbf{v}_{j}||^{2}=(\textbf{x}_{n}-\sum_{j=1}^{K}z_{nj}\textbf{v}_{j})^{T}(\textbf{x}_{n}-\sum_{j=1}^{K}z_{nj}\textbf{v}_{j})$$
+$$=\textbf{x}_{n}^{T}\textbf{x}_{n}+\sum_{j=1}^{N}z_{nj}^{2} - 2\textbf{x}_{n}^{T}\sum_{j=1}^{N}z_{nj}\textbf{v}_{j}$$
+
+代入$\textbf{v}_{i}^{T}\textbf{v}_{j}=\mathbb{I}(i=j)$，$z_{nj}=\textbf{x}_{n}^{T}\textbf{v}_{j}$，得到a的结论：
+$$||\textbf{x}_{n}-\sum_{j=1}^{K}z_{nj}\textbf{v}_{j}||^{2}=\textbf{x}_{n}^{T}\textbf{x}_{n} - 2\sum_{j=1}^{K}\textbf{v}_{j}^{T}\textbf{x}_{n}\textbf{x}_{n}^{T}\textbf{v}_{j}$$
+
+再代入$\textbf{v}_{j}^{T}\textbf{C}\textbf{v}_{j}=\lambda_{j}$并对$n$求和可直接得到b的结论。
+
+将$K=d$代入b的结论，得到：
+$$J_{K=d}=\frac{1}{N}\sum_{n=1}^{N}\textbf{x}_{n}^{T}\textbf{x}_{n}-\sum_{j=1}^{d}\lambda_{j}=0$$
+$$\frac{1}{N}\sum_{n=1}^{N}\textbf{x}_{n}^{T}\textbf{x}_{n}-\sum_{j=1}^{d}\lambda_{j}=0$$
+
+代入一般的情况：
+$$J_{K}=\sum_{j=1}^{d}\lambda_{j}-\sum_{j=1}^{K}\lambda_{j}=\sum_{j=d+1}^{K}\lambda_{j}$$
+
+\subsection{Fisher判别法}
+Straightforward algebra.
+
+Fisher判别算法在处理多类分类问题时比较复杂，需要利用到一些额外的假设和近似。（need reference）
+
+\subsection{}
+本题使用的思路就是本解答在12.4给出的思路，故此处不加赘述。
+
+\subsection{}
+Practice by yourself.
+
+\subsection{}
+wtf$\textbf{x}_{v}$？
+
+wtf$\textbf{x}_{h}$？
+
+
+\subsection{}
+因为：
+$$p(\textbf{z})=N(\textbf{z}|0,\textbf{I})$$
+$$p(\textbf{x}|\textbf{z})=N(\textbf{x}|\textbf{W}\textbf{z},\sigma^{2}\textbf{I})$$
+
+利用第4章的结论：
+$$N(\textbf{x})=N(\textbf{x}|0,\sigma^{2}\textbf{I}+\textbf{W}\textbf{W}^{T})$$
+
+12.2.4节中最大似然估计的推导方法见“Probabilistic Principal Component Analysis,Michael E.Tipping, Christopher M.Bishop,1999”。
+
+代入最大似然估计，此时协方差矩阵（$D*D$）的逆可以如下计算：
+$$(\sigma^{2}\textbf{I}+\textbf{W}\textbf{W}^{T})^{-1}=\sigma^{-2}\textbf{I} - \sigma^{-2}\textbf{W}(\frac{1}{\sigma^{-2}}\textbf{W}^{T}\textbf{W}+\sigma^{-2}\textbf{I})^{-1}\textbf{W}^{T}\sigma^{-2}$$
+
+其中只需要求一个$L*L$矩阵的逆。
+
+\subsection{}
+Practice by youself.
+
+
+\newpage
+\section{稀疏线性模型}
+\subsection{RSS的偏导数}
+定义：
+$$RSS(\textbf{w})=\sum_{n=1}^{N}(y_{n}-\textbf{w}^{T}\textbf{x}_{n})^{2}$$
+
+直接地：
+$$\frac{\partial}{\partial w_{j}}RSS(\textbf{w})=\sum_{n=1}^{N}2(y_{n}-\textbf{w}^{T}\textbf{x}_{n})(-x_{nj})$$
+$$=-\sum_{n=1}^{N}2(x_{nj}y_{n}-x_{nj}\sum_{i=1}^{D}w_{i}x_{ni})=-\sum_{n=1}^{N}2(x_{nj}y_{n}-x_{nj}\sum_{i\neq j}^{D}w_{i}x_{ni}-x_{nj}^{2}w_{j})$$
+
+其中$w_{j}$的系数为：
+$$a_{j}=2\sum_{n=1}^{N}x_{nj}^{2}$$
+
+其他无关项合并为：
+$$c_{j}=2\sum_{n=1}^{N}x_{nj}(y_{n}-\textbf{w}_{-j}^{T}\textbf{x}_{n,-j})$$
+
+最终：
+$$w_{j}=\frac{c_{j}}{a_{j}}$$
+
+\subsection{线性回归的经验贝叶斯方法的M-step}
+此处给出自动关联判别（Automatic Relevance Determination，ARD）的EM推导，在一个线性回归场景中：
+$$p(\textbf{y}|\textbf{x},\textbf{w},\beta)=N(\textbf{y}|\textbf{X}\textbf{w},\beta^{-1})$$
+$$p(\textbf{w})=N(\textbf{w}|0,\textbf{A}^{-1})$$
+$$A=diag(\alpha)$$
+
+在E-step要求出隐含元$\textbf{w}$的期望，运用线性高斯关系得到：
+$$p(\textbf{w}|\textbf{y},\alpha,\beta)=N(\mu,\Sigma)$$
+$$\Sigma^{-1}=\textbf{A}+\beta \textbf{X}^{T}\textbf{X}$$
+$$\mu=\Sigma(\beta \textbf{X}^{T}\textbf{y})$$
+
+即：
+$$\mathbb{E}_{\alpha,\beta}[\textbf{w}]=\mu$$
+$$\mathbb{E}_{\alpha,\beta}[\textbf{w}\textbf{w}^{T}]=\Sigma+\mu\mu^{T}$$
+
+现求辅助函数：
+$$Q(\alpha,\beta,\alpha^{old},\beta^{old})=\mathbb{E}_{\alpha^{old},\beta^{old}}[\log p(\textbf{y},\textbf{w}|\alpha,\beta)]$$
+$$=\mathbb{E}[\log p(\textbf{y}|\textbf{w},\beta) + \log p(\textbf{w}|)]$$
+$$=\frac{1}{2}\mathbb{E}[N \log \beta -\beta (\textbf{y}-\textbf{X}\textbf{w})^{T}(\textbf{y}-\textbf{X}\textbf{w})+\sum_{j}\log \alpha_{j} - \textbf{w}^{T}\textbf{A}^{-1}\textbf{w}]$$
+
+E-step取期望时，需要$\mathbb{E}[\textbf{w}]$和$\mathbb{E}[\textbf{w}\textbf{w}^{T}]$，之前已完成计算。
+
+引入$\alpha$分量和$\beta$的先验分布：
+$$p(\alpha,\beta)=\prod_{j}Ga(\alpha_{j}|a+1,b) \cdot Ga(\beta|c+1,d)$$
+
+故后验形式的辅助函数：
+$$Q'=Q + \log p(\alpha,\beta) = Q + \sum_{j}(a \log \alpha_{j}-b \alpha_{j}) + (c \log \beta - d \beta)$$
+
+在M-step中，首先对$\alpha_{i}$优化：
+$$\frac{\partial}{\partial \alpha_{i}} Q'=\frac{1}{2\alpha_{i}}-\frac{\mathbb{E}[w_{i}^{2}]}{2} + \frac{a}{\alpha_{i}} -b$$
+
+置零得到：
+$$\alpha_{i}=\frac{1+2a}{\mathbb{E}[w_{i}^{2}]-b}$$
+
+对$\beta$优化：
+$$\frac{\partial}{\partial \beta}Q'=\frac{N}{2\beta}-\mathbb{E}[||\textbf{y}-\textbf{X}\textbf{w}||^{2}]+\frac{c}{\beta}-d$$
+
+得到：
+$$\beta = \frac{N+2c}{\mathbb{E}[||\textbf{y}-\textbf{X}\textbf{w}||^{2}]+2d}$$
+
+将期望展开可得到13.168式。
+
+\subsection{}
+Unsolved.
+
+本题同样考虑ARD的参数选取，但是使用EB而不是EM方案，首先在似然概率中通过积分消去隐变量$\textbf{w}$：
+$$p(\textbf{y}|\alpha,\beta)=\int p(\textbf{y}|\textbf{w},\beta)p(\textbf{w}|\alpha)d\textbf{w}$$
+$$=\int N(\textbf{y}|\textbf{X}\textbf{w},\beta \textbf{I})N(\textbf{w}|0,\textbf{A}^{-1})d\textbf{w}$$
+$$=N(\textbf{y}|0,\beta \textbf{I} + \textbf{X}\textbf{A}^{-1}\textbf{X}^{T})$$
+
+记此时的协方差矩阵为$\textbf{C}$。
+
+\subsection{}
+Straightforward algebra.
+
+\subsection{将Elastic net算法统一到lasso中}
+直接将13.196两侧展开，左侧：
+$$J_{1}(c\textbf{w})=(\textbf{y}-c\textbf{X}\textbf{w})^{T}(\textbf{y}-c\textbf{X}\textbf{w}) + c^{2}\lambda_{2}\textbf{w}^{T}\textbf{w} + \lambda_{1}|\textbf{w}|_{1}$$
+$$=\textbf{y}^{T}\textbf{y} - c^{2}\textbf{w}^{T}\textbf{X}^{T}\textbf{X}\textbf{w} - 2 \textbf{y}^{T}\textbf{X}\textbf{w} + c^{2}\lambda_{2}\textbf{w}^{T}\textbf{w} + \lambda_{1}|\textbf{w}|_{1}$$
+
+右侧有：
+$$J_{2}(\textbf{w})=\begin{pmatrix}  
+\textbf{y}-c\textbf{X}\textbf{w} \\
+-c \sqrt{\lambda_{2}}\textbf{w} \\
+\end{pmatrix}^{T}\begin{pmatrix}  
+\textbf{y}-c\textbf{X}\textbf{w} \\
+-c \sqrt{\lambda_{2}}\textbf{w} \\
+\end{pmatrix}+c \lambda_{1}|\textbf{w}|_{1}$$
+$$=(\textbf{y}-c\textbf{X}\textbf{w})^{T}(\textbf{y}-c\textbf{X}\textbf{w})+c^{2}\lambda_{2}\textbf{w}^{T}\textbf{w} +c \lambda_{1}|\textbf{w}|_{1}$$
+$$=\textbf{y}^{T}\textbf{y}+ c^{2}\textbf{w}^{T}\textbf{X}^{T}\textbf{X}\textbf{w} - 2\textbf{y}^{T}\textbf{X}\textbf{w}+c^{2}\lambda_{2}\textbf{w}^{T}\textbf{w}+c\lambda_{1}|\textbf{w}|_{1}$$
+
+故13.196和13.195恒等。
+
+这显示Elastic Net正则化方法，即选取$l_{1}$和$l_{0}$的线性组合为正则项的效果等效于一个lasso正则项。
+
+\subsection{稀疏如何导致线性回归中的参数收缩}
+回顾最大似然估计的过程，对于一般的最小二乘法：
+$$RSS(\textbf{w}) = (\textbf{y}-\textbf{X}\textbf{w})^{T}(\textbf{y}-\textbf{X}\textbf{w})$$
+
+引入条件$\textbf{X}^{T}\textbf{X}=I$：
+$$RSS(\textbf{w})=c+\textbf{w}^{T}\textbf{w}-2\textbf{y}^{T}\textbf{X}\textbf{w}$$
+
+求导：
+$$\frac{\partial}{\partial w_{k}}RSS(\textbf{w})=2w_{k}-2\sum_{n=1}^{N}y_{n}x_{nk}$$
+
+得到：
+$$\hat{w}_{k}^{OLS}=\sum_{n=1}^{N}y_{n}x_{nk}$$
+
+Ridge回归中：
+$$RSS(\textbf{w})=(\textbf{y}-\textbf{X}\textbf{w})^{T}(\textbf{y}-\textbf{X}\textbf{w}) + \lambda \textbf{w}^{T}\textbf{w}$$
+
+求导得到：
+$$(2+2\lambda)w_{k} = 2\sum_{n=1}^{N}y_{n}x_{nk}$$
+
+即：
+$$\hat{w}_{k}^{ridge}=\frac{\sum_{n=1}^{N}y_{n}x_{nk}}{1+\lambda}$$
+
+Lasso回归利用次微分方法的求解在13.3.2节很详细描述，其最终估计为13.63：
+$$\hat{w}_{k}^{lasso}=sign(\hat{w}_{k}^{OLS})(|\hat{w}_{k}^{OLS}|-\frac{\lambda}{2})_{+}$$
+
+考察图13.24，易发现黑色实线为OLS，灰色线为Ridge，虚线为lasso，并且$\lambda_{1}=\lambda_{2}=1$。从该图中可以看出，Ridge造成最大似然估计向水平线的收缩，而lasso继而造成在相关性小于一个阈值时收缩到零。
+
+\subsection{Spike and Slab模型中的伯努利先验}
+$$p(\gamma|\alpha_{1},\alpha_{2})=\prod_{d=1}^{D}p(\gamma_{d}|\alpha_{1},\alpha_{2})$$
+
+积分消去中间变量$\pi_{d}$：
+$$p(\gamma_{d}|\alpha_{1},\alpha_{2})=\frac{1}{B(\alpha_{1},\alpha_{2})}\int p(\gamma_{d}|\pi_{d})p(\pi_{d}|\alpha_{1},\alpha_{2})d\pi_{d}$$
+$$=\frac{1}{B(\alpha_{1},\alpha_{2})}\int \pi_{d}^{\gamma_{d}}(1-\pi_{d})^{(1-\gamma_{d})}\pi_{d}^{\alpha_{1}-1}(1-\pi_{d})^{\alpha_{2}-1}d\pi_{d}$$
+$$=\frac{1}{B(\alpha_{1},\alpha_{2})}\int \pi_{d}^{\alpha_{1}+\gamma_{d}-1}(1-\pi_{d})^{\alpha_{2}+1-\gamma_{d} - 1}d\pi_{d}$$
+$$=\frac{B(\alpha_{1}+\gamma_{d},\alpha_{2}+1-\gamma_{d})}{B(\alpha_{1},\alpha_{2})}=\frac{\Gamma(\alpha_{1}+\alpha_{2})}{\Gamma(\alpha_{1})\Gamma(\alpha_{2})} \frac{\Gamma(\alpha_{1}+\gamma_{d})\Gamma(\alpha_{2}+1-\gamma_{d})}{\Gamma(\alpha_{1}+\alpha_{2}+1)}$$
+
+所以（$N_{1}$为$\gamma$中1的个数）：
+$$p(\gamma|\alpha_{1},\alpha_{2})=\frac{\Gamma(\alpha_{1}+\alpha_{2})^{N}}{\Gamma(\alpha_{1})^{N}\Gamma(\alpha_{2})^{N}}\frac{\Gamma(\alpha_{1}+1)^{N_{1}}\Gamma(\alpha_{2}+1)^{N-N_{1}}}{\Gamma(\alpha_{1}+\alpha_{2}+1)^{N}}$$
+$$=\frac{(\alpha_{1}+1)^{N_{1}}(\alpha_{2}+1)^{N-N_{1}}}{(\alpha_{1}+\alpha_{2}+1)^{N}}$$
+
+而：
+$$\log p(\gamma|\alpha_{1},\alpha_{2})=N\log\frac{\alpha_{2}+1}{\alpha_{1}+\alpha_{2}+1} + N_{1} \log \frac{\alpha_{1}+1}{\alpha_{2}+1}$$
+
+\subsection{}
+GSM和拉普拉斯分布的联系是一个重要的思想：
+$$Lap(w_{j}|0,\frac{1}{\gamma})=\int N(w_{j}|0,\tau_{j}^{2})Ga(\tau_{j}^{2}|1,\frac{\gamma^{2}}{2})d\tau_{j}^{2}$$
+
+推荐的证明方法是对两边同时进行拉普拉斯变换/矩母函数变换。
+
+所要求的：
+$$\mathbb{E}[\frac{1}{\tau_{j}^{2}}|w_{j}]=\int \frac{1}{\tau_{j}^{2}}p(\tau_{j}^{2}|w_{j})d\tau_{j}^{2}=\int \frac{1}{\tau_{j}^{2}}\frac{p(w_{j}|\tau_{j}^{2})p(\tau_{j}^{2})}{p(w_{j})}d\tau_{j}^{2}$$
+$$=\frac{1}{p(w_{j})}\int \frac{1}{\tau_{j}^{2}}N(w_{j}|0,\tau_{j}^{2})p(\tau_{j}^{2})d\tau_{j}^{2}$$
+
+根据题干提示13.200，上式化为：
+$$\frac{1}{p(w_{j})}\frac{-1}{|w_{j}|}\frac{d}{dw_{j}}\int N(w_{j}|0,\tau_{j}^{2})p(\tau_{j}^{2})d\tau_{j}^{2}$$
+
+因为：
+$$\frac{d}{dw} \log p(w) = \frac{1}{p(w)}\frac{d}{dw}p(w)$$
+
+得到13.197：
+$$\frac{1}{p(w_{j})}\frac{-1}{|w_{j}|}\frac{d}{dw_{j}}p(w_{j})=\frac{1}{|w_{j}|}\frac{d}{dw_{j}}-\log p(w_{j})$$
+
+！此题存疑，Hint 1和Hint 2中可能均有印刷错误。
+
+\subsection{先验分布服从拉普拉斯分布的Probit回归的EM算法}
+（第一个完整解出这道题的哥们发了篇Trans）
+
+直接的Probit回归过程没有隐变量参与其中，引入拉普拉斯分布为线性因子$\textbf{w}$的先验分布得到其lasso版本，因为拉普拉斯分布可表示为高斯分布的连续性混合，所以引入与$\textbf{w}$维数相同的隐变量$\tau^{2}$。Probit回归的PGM为：
+$$\gamma \rightarrow \tau^{2} \rightarrow \textbf{w} \rightarrow \textbf{y} \leftarrow \textbf{X}$$
+
+所有变量的联合分布为：
+$$p(\gamma,\tau^{2},\textbf{w},\textbf{y}|\textbf{X})=p(\gamma)\prod_{d=1}^{D}p(\tau_{d}^{2}|\gamma)\prod_{d=1}^{D}p(w_{d}|\tau_{d}^{2})\prod_{n=1}^{N}\Phi(\textbf{w}^{T}\textbf{x}_{n})^{y_{n}}(1-\Phi(\textbf{w}^{T}\textbf{x}_{n}))^{1-y_{n}}$$
+
+为简单起见，我们将$\gamma$设置为常数。根据13.86：
+$$p(\tau^{2}|\gamma)=Ga(\tau_{d}^{2}|1,\frac{\gamma^{2}}{2})$$
+$$p(w_{d}|\tau_{d}^{2})=N(w_{d}|0,\tau_{d}^{2})$$
+
+所以：
+$$p(\tau^{2},\textbf{w},\textbf{y}|\textbf{X},\gamma)\propto \exp\left\{ -\frac{1}{2}\sum_{d=1}^{D}(\gamma^{2}\tau_{d}^{2} + \frac{w_{d}^{2}}{\tau_{d}^{2}}) \right\}\cdot \prod_{d=1}^{D}\frac{1}{\tau_{d}}$$
+$$\cdot \prod_{n=1}^{N}\Phi(\textbf{w}^{T}\textbf{x}_{n})^{y_{n}}(1-\Phi(\textbf{w}^{T}\textbf{x}_{n}))^{1-y_{n}}$$
+
+在辅助函数$Q(\theta^{new},\theta^{old})$中，我们对$\theta^{old}$求期望，在本场景中参数为$\textbf{w}$，隐变量为$\tau^{2}$，所以：
+$$Q(\textbf{w},\textbf{w}^{old})=\mathbb{E}_{\textbf{w}^{old}}[\log p(\textbf{y},\tau^{2}|\textbf{w})]$$
+
+为构造辅助函数，取出$\log p(\tau^{2},\textbf{w},\textbf{y})$中所有和$\textbf{w}$相关的项：
+$$\log p(\textbf{y},\tau^{2}|\textbf{w}) = c -\frac{1}{2}\sum_{d=1}^{D} \frac{w_{d}^{2}}{\tau_{d}^{2}} + \sum_{n=1}^{N} y_{n}\log \Phi(\textbf{w}^{T}\textbf{x}_{n}) + (1-y_{n})(1-\Phi(\textbf{w}^{T}\textbf{x}_{n}))$$
+
+可见在E-step需要求的期望仍旧只有一项：
+$$\mathbb{E}[\frac{1}{\tau_{d}^{2}}|\textbf{w}^{old}]$$
+
+求法和13.4.4.3节相同，因为Probit和线性回归在这部分为止的PGM是相同的。
+
+M-step的最优化和引入正态先验分布的Probit回归过程相同，这里不加复述。
+
+\subsection{}
+Follow the hints and straightforward algebra.
+
+\subsection{投影梯度下降法}
+本题所要求的投影梯度下降法遵从这样的设计原理：
+
+一般而言，可以通过在$\textbf{w}$上进行梯度下降来进行优化。但是当模型在$\textbf{w}$上有一些约束条件，而梯度下降可能打破这些约束时，就必须将每一次迭代的增量投影到一个使得新$\textbf{w}$仍服从约束的空间中。
+
+现在我们要求：
+$$min_{\textbf{w}}\left\{ NLL(\textbf{w}) +\lambda||\textbf{w}||_{1}\right\}$$
+
+我们在线性回归的语境下讨论这个优化，即：
+$$NLL(\textbf{w})=\frac{1}{2}||\textbf{y}-\textbf{X}\textbf{w}||^{2}_{2}$$
+
+因为$\lambda||\textbf{w}||_{1}$中有绝对值运算，故需要使用非平凡的优化方案，题干给出的方式是表达为：
+$$\textbf{w}=\textbf{u}-\textbf{v}$$
+$$u_{i}=(x_{i})_{+}=max \left\{ 0,x_{i} \right\}$$
+$$v_{i}=(-x_{i})_{+}=max \left\{ 0,-x_{i} \right\}$$
+
+即$\textbf{u} \geq \textbf{0},\textbf{v} \geq \textbf{0}$。此时有：
+$$||\textbf{w}||_{1} = \textbf{1}_{n}^{T}\textbf{u} + \textbf{1}_{n}^{T}\textbf{v}$$
+
+则原始的问题转化为：
+$$min_{\textbf{w}}\left\{ \frac{1}{2}||\textbf{y}-\textbf{X}(\textbf{u}-\textbf{v})||^{2}_{2} + \lambda\textbf{1}_{n}^{T}\textbf{u} + \lambda\textbf{1}_{n}^{T}\textbf{v} \right\}$$
+$$s.t.\textbf{u} \geq \textbf{0},\textbf{v} \geq \textbf{0}$$
+
+改写成：
+$$\textbf{z} = \begin{pmatrix}  \textbf{u} \\ \textbf{v} \end{pmatrix}$$
+
+则上问题可重新表示为：
+$$min_{\textbf{z}}\left\{ f(\textbf{z}) = \textbf{c}^{T}\textbf{z} +\frac{1}{2}\textbf{z}^{T}\textbf{A}\textbf{z} \right\}$$
+$$s.t.\textbf{z} \geq \textbf{0}$$
+
+其中：
+$$\textbf{c} = \begin{pmatrix} \lambda \textbf{1}_{n} - \textbf{y}\textbf{X} \\ \lambda\textbf{1}_{n} + \textbf{y}\textbf{X} \end{pmatrix}$$
+$$\textbf{A}=\begin{pmatrix} \textbf{X}^{T}\textbf{X} & -\textbf{X}^{T}\textbf{X} \\ -\textbf{X}^{T}\textbf{X} & \textbf{X}^{T}\textbf{X} \end{pmatrix}$$
+
+求梯度：
+$$\nabla f(\textbf{z})=\textbf{c}+\textbf{A}\textbf{z}$$
+
+在最一般的梯度下降场景中，设置学习速率$\alpha$，一般的梯度更新公式为：
+$$\textbf{z}^{k+1}=\textbf{z}^{k}-\alpha\nabla f(\textbf{z}^{k})$$
+
+在投影梯度下降法中，取$\textbf{g}^{k}$：
+$$\textbf{g}^{k}_{i}=min\left\{ \textbf{z}^{k}_{i},\alpha\nabla f(\textbf{z}^{k})_{i} \right\}$$
+
+并在迭代步骤中：
+$$\textbf{z}^{k+1}=\textbf{z}^{k} - \textbf{g}^{k}$$
+
+在原始论文中使用了更精细的梯度下降法来调整学习速率，可参考原文“Gradient Projection for Sparse Reconstruction: Application to Compressed Sensing and Other Inverse Problems, Mario A.T.Figueiredo”。
+
+\subsection{分段损失函数的次微分}
+$$if(\theta < 1) \partial f(\theta)=\left\{ -1 \right\}$$
+$$if(\theta = 1) \partial f(\theta)=[ -1,0 ]$$
+$$if(\theta > 1) \partial f(\theta)=\left\{ 0 \right\}$$
+
+\subsection{}
+本题的讨论内容从理论体系上比较偏离机器学习概率论的主题，此处不做详细解答，推荐参考“Rigorous Affine Lower Bound Functions for Multivariate Polynomials and Their Use in Global Optimisation”。
+
+\newpage
+\section{核方法}
+这一页空着有点尴尬，我是不是该写点什么。
+
+算了不写了，后半本再见。
+
+
+
+
+
+\end{document}
+
+%插入图片格式：
+%\begin{figure}[h]
+%\small
+%\centering
+%\includegraphics[width=6cm]{./gaussian/Maxwell_Laplace_Gaussian_.jpg}
+%\caption{拉普拉斯近似，$\sigma^{2}=0.3$} \label{fig:aa}
+%\end{figure}
