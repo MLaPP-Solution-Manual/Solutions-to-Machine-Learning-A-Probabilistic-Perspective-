@@ -12,6 +12,9 @@ English version available now (chapter 1-21).
 
 #2020/01/04.
 Hello, I am now returning to update this document.
+
 The duration might be long, since I have received no sponsor and have no plan to look for any. 
+
 But I still hope that the reference to this project could be timely updated.
-I owe my gratitude to all who have browsed this manuscript and am willing to help, be it ever so little, those who devote their time and effort to studying machine learning with this classical textbook, Machine Learning: A Probabilistic Perspective. 
+
+I owe my gratitude to all who have browsed this manuscript and am willing to help, be it ever so little, those who have devoted their time and effort to studying machine learning with this classical textbook, MLaPP. 
