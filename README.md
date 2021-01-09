@@ -13,3 +13,6 @@ Pending version 2.
 #2021/01/08.
 Updating Chapter 2.
 
+#2021/01/09.
+Updating Chapter 3.
+
