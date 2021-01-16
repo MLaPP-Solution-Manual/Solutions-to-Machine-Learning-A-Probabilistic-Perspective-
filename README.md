@@ -31,3 +31,6 @@ Updating Chapter 7 & 8.
 
 #2021/01/15.
 Updating Chapter 9.
+
+#2021/01/16.
+Updating Chapter 10.
