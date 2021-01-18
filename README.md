@@ -11,8 +11,10 @@ Using XeLatex for recompilation.
 
 Figures need extra generation.
 
+The second round of edition is expected to be finished by Feb. the 10th, 2021.
+
 #2021/01/04.
-Pending version 2.
+Start pending version 2.1.
 
 #2021/01/08.
 Updating Chapter 2.
