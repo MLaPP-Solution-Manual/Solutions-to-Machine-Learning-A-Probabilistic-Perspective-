@@ -22,29 +22,29 @@ __1524587011@qq.com__.
 
 The second round of edition is expected to be finished by Feb. the 10th, 2021.
 
-#2021/01/04.
-Start pending version 2.1.
+# 2021/01/04.
+## Start pending version 2.1.
 
-#2021/01/08.
-Updating Chapter 2.
+# 2021/01/08.
+## Updating Chapter 2.
 
-#2021/01/09.
-Updating Chapter 3.
+# 2021/01/09.
+## Updating Chapter 3.
 
-#2021/01/11.
-Updating Chapter 4.
+# 2021/01/11.
+## Updating Chapter 4.
 
-#2021/01/12.
-Updating Chapter 5 & 6.
+# 2021/01/12.
+## Updating Chapter 5 & 6.
 
-#2021/01/14.
-Updating Chapter 7 & 8.
+# 2021/01/14.
+## Updating Chapter 7 & 8.
 
-#2021/01/15.
-Updating Chapter 9.
+# 2021/01/15.
+## Updating Chapter 9.
 
-#2021/01/16.
-Updating Chapter 10.
+# 2021/01/16.
+## Updating Chapter 10.
 
-#2021/01/17.
-Updating Chapter 11.
+# 2021/01/17.
+## Updating Chapter 11.
