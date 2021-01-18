@@ -1,15 +1,18 @@
 # Solutions-to-Machine-Learning-A-Probabilistic-Perspective-
 
-Solutions to "Machine Learning: A Probabilistic Perspective"
+Solutions to "Machine Learning: A Probabilistic Perspective".
 
-I owe my gratitude to all who have browsed this manuscript and am willing to help, be it ever so little, those who have devoted their time and effort to studying machine learning with this classical textbook. 
+I owe my gratitude to all who have browsed this manuscript and am willing to help, be it ever so little, those who have devoted their time and effort to studying machine learning from this classic textbook. 
 
-In case of any suggestion, debug or voluntary, feel free to contact me by solour_lfq@sjtu.edu.cn || ge72bug@tum.de || 1524587011@qq.com
-:)
+You are free to distribute this document (includes browsing it, printing it down, or uploading its copy to any online course platforms) for non-profit purpose. 
 
-Using XeLatex for recompilation.
+Refer to/Star this repository, whenever it is possible and (if you feel it is) necessary, to increase its visibility.
 
-Figures need extra generation.
+You can build your individual version (for the sake of font, typos, etc.) from the Tex source that I have provided, in which case please refer to this repository after distributing your own version.
+
+For local PDF generation, I suggest use XeLatex for compilation.
+
+For any suggestion, debug, comment or voluntary efforts that can improve this document, feel free to contact me by solour_lfq@sjtu.edu.cn || ge72bug@tum.de || 1524587011@qq.com.
 
 The second round of edition is expected to be finished by Feb. the 10th, 2021.
 
