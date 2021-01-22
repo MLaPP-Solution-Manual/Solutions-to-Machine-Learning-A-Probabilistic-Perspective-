@@ -57,3 +57,6 @@ Updating Chapter 13 & 14 & 15.
 
 #2021/01/21.
 Updating Chapter 16.
+
+#2021/01/22.
+Updating Chapter 17.
