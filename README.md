@@ -60,3 +60,6 @@ Updating Chapter 16.
 
 #2021/01/22.
 Updating Chapter 17.
+
+#2021/01/23.
+Updating Chapter 18.
