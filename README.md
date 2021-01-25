@@ -2,8 +2,6 @@
 
 Solutions to "Machine Learning: A Probabilistic Perspective".
 
-I owe my gratitude to all who have browsed this manuscript and am willing to help, be it ever so little, those who have devoted their time and effort to studying machine learning from this classic textbook. 
-
 ___You are free to distribute this document (includes browsing it, printing it down, or uploading its copy to any online course platforms) for non-profit purpose.___
 
 ___Refer to/Star this repository, whenever it is possible and (if you feel it is) necessary, to increase its visibility.___
