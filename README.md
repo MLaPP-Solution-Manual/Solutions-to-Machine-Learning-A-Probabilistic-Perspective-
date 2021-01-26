@@ -66,4 +66,4 @@ Updating Chapter 18.
 Updating Chapter 19 & 20.
 
 #2021/01/26.
-Updating Chapter 21 & 22.
+Updating Chapter 21 & 22 & 23.
