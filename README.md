@@ -18,52 +18,8 @@ __ge72bug@tum.de__
 
 __1524587011@qq.com__.
 
-The second round of edition is expected to be finished by Feb. the 10th, 2021.
-
 #2021/01/04.
 Start pending version 2.1.
 
-#2021/01/08.
-Updating Chapter 2.
-
-#2021/01/09.
-Updating Chapter 3.
-
-#2021/01/11.
-Updating Chapter 4.
-
-#2021/01/12.
-Updating Chapter 5 & 6.
-
-#2021/01/14.
-Updating Chapter 7 & 8.
-
-#2021/01/15.
-Updating Chapter 9.
-
-#2021/01/16.
-Updating Chapter 10.
-
-#2021/01/17.
-Updating Chapter 11.
-
-#2021/01/18.
-Updating Chapter 12.
-
-#2021/01/20.
-Updating Chapter 13 & 14 & 15.
-
-#2021/01/21.
-Updating Chapter 16.
-
-#2021/01/22.
-Updating Chapter 17.
-
-#2021/01/23.
-Updating Chapter 18.
-
-#2021/01/25.
-Updating Chapter 19 & 20.
-
-#2021/01/26.
-Updating Chapter 21 & 22 & 23.
+#2021/01/27.
+Finish pending V.2.1.
