@@ -10,7 +10,7 @@ ___You can build your individual version (for the sake of font, typos, etc.) fro
 
 For local PDF generation, I suggest use XeLatex for compilation.
 
-For any suggestion, debug, comment or voluntary efforts that can improve this document, feel free to contact me by:
+For any suggestion, comment or voluntary effort that can improve this document, feel free to contact me by:
 
 __solour_lfq@sjtu.edu.cn__
 
