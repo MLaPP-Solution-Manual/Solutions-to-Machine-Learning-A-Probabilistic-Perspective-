@@ -16,8 +16,6 @@ __solour_lfq@sjtu.edu.cn__
 
 __ge72bug@tum.de__
 
-__1524587011@qq.com__.
-
 #2021/01/04.
 Start pending version 2.1.
 
